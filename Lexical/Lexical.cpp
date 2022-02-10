@@ -5,7 +5,7 @@
 #include <vector>
 #include "Token.h"
 
-//{L,D,*,/,=,<,B,>,other, { , } , ( , ) , ; , , + , - , !}
+//{L,D,*,/,=,<,B,>,other, { , } , ( , ) , + , - , , , ;}
 enum class StateColumn {
 	letter,
 	digit,
@@ -25,7 +25,7 @@ enum class StateColumn {
 	comma,
 	semicolon
 };
-
+//{L,D,*,/,=,<,B,>,other, { , } , ( , ) , + , - , , , ;}
 enum class StateRow {
 	start, // rows
 	error,
@@ -129,59 +129,59 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 		return StateColumn::letter;
 		break;
 	case 'c':
-		std::cout << " space \n";
+		std::cout << " space found \n";
 		return StateColumn::brk;
 		break;
 	case 'd':
-		std::cout << " left brace \n";
+		std::cout << " left brace found\n";
 		return StateColumn::rightbrace;
 		break;
 	case 'e':
-		std::cout << " right brace \n";
+		std::cout << " right brace found\n";
 		return StateColumn::leftbrace;
 		break;
 	case 'f':
-		std::cout << " multiply \n";
+		std::cout << " multiply found\n";
 		return StateColumn::multiply;
 		break;
 	case 'g':
-		std::cout << " divide \n";
+		std::cout << " divide found\n";
 		return StateColumn::divide;
 		break;
 	case 'h':
-		std::cout << " equal \n";
+		std::cout << " equal found\n";
 		return StateColumn::equal;
 		break;
 	case 'i':
-		std::cout << " less than \n";
+		std::cout << " less than found\n";
 		return StateColumn::lessthan;
 		break;
 	case 'j':
-		std::cout << " greater than \n";
+		std::cout << " greater than found\n";
 		return StateColumn::greaterthan;
 		break;
 	case 'k':
-		std::cout << " left parenthesis \n";
+		std::cout << " left parenthesis found\n";
 		return StateColumn::leftparenthesis;
 		break;
 	case 'l':
-		std::cout << " right parenthesis \n";
+		std::cout << " right parenthesis found \n";
 		return StateColumn::rightparenthesis;
 		break;
 	case 'm':
-		std::cout << " add \n";
+		std::cout << " add found\n";
 		return StateColumn::plus;
 		break;
 	case 'n':
-		std::cout << " subtract \n";
+		std::cout << " subtract found\n";
 		return StateColumn::minus;
 		break;
 	case 'o':
-		std::cout << " comma \n";
+		std::cout << " comma found \n";
 		return StateColumn::comma;
 		break;
 	case 'p':
-		std::cout << " semicolon \n";
+		std::cout << " semicolon found\n";
 		return StateColumn::semicolon;
 		break;
 	default:
@@ -194,199 +194,220 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 
 int main()
 {
-
-	//20 is error state
-	//21 multiply op * <mop>
-	//22 int value <int>
-	//23 variable value <var>
-	//24 multiply op / <mop>
-	//25 assignment op = <assignment>
-	//26 relational op == <relop>
-	//27 relational op < <relop>
-	//28 relational op <= <relop>
-	//29 relational op > <relop>
-	//30 relational op >= <relop>
-
 	StateRow sT[28][17]{
-		{StateRow::intermediate5,StateRow::intermediate3,StateRow::mOp,StateRow::intermediate7,StateRow::intermediate11,StateRow::intermediate14,StateRow::start,StateRow::intermediate17,StateRow::error},
-		{StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error}
+		{StateRow::intermediate5,StateRow::intermediate3,StateRow::mOp,StateRow::intermediate7,StateRow::intermediate11,StateRow::intermediate14,StateRow::start,StateRow::intermediate17,StateRow::error,StateRow::lbrace,StateRow::rbrace,StateRow::lparenthesis,StateRow::rparenthesis,StateRow::plusoperator,StateRow::minusoperator,StateRow::commaValue,StateRow::semicolonValue},
+		/*not needed?*/{StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error,StateRow::error},
+		/*not needed?*/{StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp,StateRow::mOp},
+		{StateRow::intValue,StateRow::intermediate3,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue},
+		/*not needed?*/{StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue,StateRow::intValue},
+		{StateRow::intermediate5,StateRow::intermediate5,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue,StateRow::varValue},
+		/*not needed?*/{StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start},
+		{StateRow::dOp,StateRow::dOp,StateRow::intermediate8,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp},
+		{StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate9,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8},
+		{StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::start,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8,StateRow::intermediate8},
+		/*not needed?*/{StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp,StateRow::dOp},
+		{StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::requals,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment},
+		/*not needed?*/{StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment,StateRow::assignment},
+		/*not needed?*/{StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals,StateRow::requals},
+		{StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthanequal,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan},
+		/*not needed?*/{StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan,StateRow::rlessthan},
+		/*not needed?*/{StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal,StateRow::rlessthanequal},
+		{StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthanequal,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan},
+		/*not needed?*/{StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan,StateRow::rgreaterthan},
+		/*not needed?*/{StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal,StateRow::rgreaterthanequal},
+		/*not needed?*/{StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace,StateRow::lbrace},
+		/*not needed?*/{StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace,StateRow::rbrace},
+		/*not needed?*/{StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis,StateRow::lparenthesis},
+		/*not needed?*/{StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis,StateRow::rparenthesis},
+		/*not needed?*/{StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator,StateRow::plusoperator},
+		/*not needed?*/{StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator,StateRow::minusoperator},
+		/*not needed?*/{StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue,StateRow::commaValue},
+		/*not needed?*/{StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue,StateRow::semicolonValue},
 
-
-		//continue for rest of table
-	};
-
-
-	int statetable[20][9] = {
-		//{L,D,*,/,=,<,B,>,other, { , } , , , ; , , + , - }
-		  {5,3,2,7,11,14,0,17,1},		//0
-		  {20,20,20,20,20,20,20,20,20}, //1 error
-		  {21,21,21,21,21,21,21,21,21}, //2 multiply
-		  {4,3,4,4,4,4,4,4,1},			//3
-		  {22,22,22,22,22,22,22,22,22}, //4 int
-		  {5,5,6,6,6,6,6,6,1},			//5
-		  {23,23,23,23,23,23,23,23,23}, //6 var
-		  {10,10,8,10,10,10,10,10,1},   //7
-		  {8,8,9,8,8,8,8,8,8},			//8
-		  {8,8,8,0,8,8,8,8,8},			//9
-		  {24,24,24,24,24,24,24,24},	//10 divide
-		  {12,12,12,12,13,12,12,12,1},  //11
-		  {25,25,25,25,25,25,25,25,25}, //12 assign =
-		  {26,26,26,26,26,26,26,26,26}, //13 relational ==
-		  {15,15,15,15,16,15,15,15,1},  //14
-		  {27,27,27,27,27,27,27,27,27}, //15 relational <
-		  {28,28,28,28,28,28,28,28,28}, //16 relational <=
-		  {18,18,18,18,19,18,18,18,1},	//17
-		  {29,29,29,29,30,29,29,29,29}, //18 relational >
-		  {30,30,30,30,30,30,30,30,30}  //19 relational >=
 	};
 
 	std::string tempString;
 	std::vector<Token> tokens = std::vector<Token>();
 
 	int currentpoint = 0;
-	bool finished = false;
+
 	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
 	StateRow currentState = StateRow::start;
+
 	while (currentpoint < read.length()) {
+
 		switch (currentState) {
 		case StateRow::start: {
+			std::cout << " state = start \n";
 			tempString = "";
+			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::error: {
-			std::cout << "error";
+			std::cout << " state = error \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::mOp: {
+			std::cout << " state = mOp \n";
 			tempString += read[currentpoint]; //reads single character where pointer currently located
+			std::cout << tempString;
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			StateRow currentState = StateRow::start; //restarts at beginning state
 			break;
 		}
 		case StateRow::intermediate3: {
+			std::cout << " state = int.3 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::intValue: {
+			std::cout << " state = intValue \n";
+			std::cout << "finished token = " << tempString <<"\n";
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::intermediate5: {
+			std::cout << " state = int.5 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::varValue: {
+			std::cout << " state = varValue \n";
+			std::cout << "finished token = " << tempString << "\n";
 			StateRow currentState = StateRow::start;
+			tempString = "";
+			currentpoint--;
 			break;
 		}
 		case StateRow::intermediate7: {
+			std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::intermediate8: {
+			std::cout << " state = int.8 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::intermediate9: {
+			std::cout << " state = int.9 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::dOp: {
+			std::cout << " state = dOp \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::intermediate11: {
+			std::cout << " state = int.11 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::assignment: {
+			std::cout << " state = assignment \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::requals: {
+			std::cout << " state = requals \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::intermediate14: {
+			std::cout << " state = int.14 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::rlessthan: {
-			finished = true;
+			std::cout << " state = rlessthan \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::rlessthanequal: {
-			finished = true;
+			std::cout << " state = rlessthanequal \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::intermediate17: {
+			std::cout << " state = int.17 \n";
 			tempString += read[currentpoint];
 			break;
 		}
 		case StateRow::rgreaterthan: {
-			finished = true;
+			std::cout << " state = rgreaterthan \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
-			finished = true;
+			std::cout << " state = rgreaterthanequal \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::lbrace: {
-			finished = true;
+			std::cout << " state = lbrace \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::rbrace: {
-			finished = true;
+			std::cout << " state = rbrace \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::lparenthesis: {
-			finished = true;
+			std::cout << " state = lparenthesis \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::rparenthesis: {
-			finished = true;
+			std::cout << " state = rparenthesis \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::plusoperator: {
-			finished = true;
+			std::cout << " state = plusoperator \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::minusoperator: {
-			finished = true;
+			std::cout << " state = minusoperator \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::commaValue: {
-			finished = true;
+			std::cout << " state = commaValue \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		case StateRow::semicolonValue: {
-			finished = true;
+			std::cout << " state = semicolonValue \n";
+			std::cout << tempString;
 			StateRow currentState = StateRow::start;
 			break;
 		}
 		}
-		currentState = sT[int(currentState)][int(findColumn(read[currentpoint]))]; //sets current state to next place on the table
-		++currentpoint; //moves pointer to the next location in the string
+
+		currentState = sT[int(currentState)][int(findColumn(read[currentpoint++]))]; //sets current state to next place on the table
+
+		std::cout << "new string is " << tempString << "\n";
+																   //moves pointer to the next location in the string
 	}
-
-	char a = 'B';
-	int ascichar = (int)a;
-	std::cout << statetable[0][0] << "ascii of this is" << ascichar;
-	std::cout << "";
-
-	//findColumn(a);
 
 }
 

@@ -192,6 +192,9 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 }
 
 
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//method needed to check if at end state ??
+
 int main()
 {
 	StateRow sT[28][17]{
@@ -230,7 +233,7 @@ int main()
 
 	int currentpoint = 0;
 
-	std::string read = "CLASS*Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
+	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
 	StateRow currentState = StateRow::start;
 
 	while (currentpoint < read.length()) {

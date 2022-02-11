@@ -134,11 +134,11 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 		break;
 	case 'd':
 		std::cout << " left brace found\n";
-		return StateColumn::rightbrace;
+		return StateColumn::leftbrace;
 		break;
 	case 'e':
 		std::cout << " right brace found\n";
-		return StateColumn::leftbrace;
+		return StateColumn::rightbrace;
 		break;
 	case 'f':
 		std::cout << " multiply found\n";

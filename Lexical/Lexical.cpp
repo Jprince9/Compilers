@@ -249,8 +249,8 @@ int main()
 	char coma = ',';
 	char spce = ' ';
 	int step = 1;
-	//std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
-	StateRow currentState = StateRow::start;
+	//std::string read = "CLASS Pgm1 { ((CONST M = 13, N == 56; VAR X, Y, Z; Y = 97; X = M * N + 18 - Y; ))}"; //scan entire file save to this string
+	StateRow currentState = sT[0][int(findColumn(read[currentpoint]))];
 
 	while (currentpoint < read.length()) {
 		std::cout<<"STEP : " << step << std::endl;
@@ -258,22 +258,21 @@ int main()
 		switch (currentState) {
 		case StateRow::start: {
 			std::cout << " state = start \n";
-			tempString += read[currentpoint];
-			std::cout << "start of string is : " << tempString << std::endl;
+			tempString = "";
 			break;
 		}
 		case StateRow::error: {
 			std::cout << " state = error \n";
-			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::mOp: {
 			std::cout << " state = mOp \n"; //displays state to console for debugging
-			tempString += read[currentpoint]; //adds the next character from input string into temp string
 			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
-			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
-			std::cout << "new string is : " << tempString << "\n";
+			//tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
+			tempString += read[currentpoint];
+			file << tempString << endl;
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate3: {
@@ -287,58 +286,46 @@ int main()
 			std::cout << "finished token = " << tempString <<"\n";
 			std::cout << "new string is : " << tempString << "\n";
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::intermediate5: {
 			std::cout << " state = int.5 \n";
-			if (read[currentpoint] == spce) {
-				std::cout << "DELIMITER FOUND" << std::endl;
-			}
-			else if (read[currentpoint] == coma || read[currentpoint] == semi) {
-				std::cout << "DELIMITER FOUND" << std::endl;
-			}
-			else {
 				tempString += read[currentpoint];
 				std::cout << "new string is " << tempString << "\n";
-			}
 			break;
 		}
 		case StateRow::varValue: {
 			std::cout << " state = varValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-
-			file << tempString << endl;
-			tempString = "";
-			currentpoint = currentpoint-1;
+			file << tempString << endl; 
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::intermediate7: {
 			std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
-
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate8: {
 			std::cout << " state = int.8 \n";
 			tempString += read[currentpoint];
-
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate9: {
 			std::cout << " state = int.9 \n";
 			tempString += read[currentpoint];
-
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::dOp: {
 			std::cout << " state = dOp \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate11: {
@@ -351,15 +338,15 @@ int main()
 			std::cout << " state = assignment \n";
 			std::cout << "finished token = " << tempString << "\n";
 			file << tempString << endl;
-			tempString = "";
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::requals: {
 			std::cout << " state = requals \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate14: {
@@ -371,15 +358,17 @@ int main()
 		case StateRow::rlessthan: {
 			std::cout << " state = rlessthan \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rlessthanequal: {
 			std::cout << " state = rlessthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate17: {
@@ -391,78 +380,87 @@ int main()
 		case StateRow::rgreaterthan: {
 			std::cout << " state = rgreaterthan \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
 			std::cout << " state = rgreaterthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::lbrace: {
 			std::cout << " state = lbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
-			//currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rbrace: {
 			std::cout << " state = rbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::lparenthesis: {
 			std::cout << " state = lparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rparenthesis: {
 			std::cout << " state = rparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::plusoperator: {
 			std::cout << " state = plusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::minusoperator: {
 			std::cout << " state = minusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::commaValue: {
 			std::cout << " state = commaValue \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::semicolonValue: {
 			std::cout << " state = semicolonValue \n";
 			std::cout << "finished token = " << tempString << "\n";
+			tempString += read[currentpoint];
 			file << tempString << endl;
-			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		}
-
-			currentState = sT[int(currentState)][int(findColumn(read[currentpoint++]))]; //sets current state to next place on the table
+			currentState = sT[int(currentState)][int(findColumn(read[++currentpoint]))]; //sets current state to next place on the table
 			std::cout << "CURRENT STRING : " << tempString << std::endl;
+			std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
 	}
 	file.close();
 	

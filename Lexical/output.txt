@@ -1,0 +1,13 @@
+CLASS
+Pgm1
+ CONST
+M
+N
+VAR
+X
+ Y
+ Z
+  Y
+X
+ * N
+ Y

@@ -4,7 +4,9 @@
 #include <iostream>
 #include <vector>
 #include "Token.h"
+#include <fstream>
 
+using namespace std;
 
 //{L,D,*,/,=,<,B,>,other, { , } , ( , ) , + , - , , , ;}
 enum class StateColumn {
@@ -122,71 +124,71 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 
 	switch (col) {
 	case 'a': 
-		std::cout << " digit found \n";
+		//std::cout << " digit found \n";
 		return StateColumn::digit;
 		break;
 	case 'b':
-		std::cout << " letter found \n";
+		//std::cout << " letter found \n";
 		return StateColumn::letter;
 		break;
 	case 'c':
-		std::cout << " space found \n";
+		//std::cout << " space found \n";
 		return StateColumn::brk;
 		break;
 	case 'd':
-		std::cout << " left brace found\n";
+		//std::cout << " left brace found\n";
 		return StateColumn::leftbrace;
 		break;
 	case 'e':
-		std::cout << " right brace found\n";
+		//std::cout << " right brace found\n";
 		return StateColumn::rightbrace;
 		break;
 	case 'f':
-		std::cout << " multiply found\n";
+		//std::cout << " multiply found\n";
 		return StateColumn::multiply;
 		break;
 	case 'g':
-		std::cout << " divide found\n";
+		//std::cout << " divide found\n";
 		return StateColumn::divide;
 		break;
 	case 'h':
-		std::cout << " equal found\n";
+		//std::cout << " equal found\n";
 		return StateColumn::equal;
 		break;
 	case 'i':
-		std::cout << " less than found\n";
+		//std::cout << " less than found\n";
 		return StateColumn::lessthan;
 		break;
 	case 'j':
-		std::cout << " greater than found\n";
+		//std::cout << " greater than found\n";
 		return StateColumn::greaterthan;
 		break;
 	case 'k':
-		std::cout << " left parenthesis found\n";
+		//std::cout << " left parenthesis found\n";
 		return StateColumn::leftparenthesis;
 		break;
 	case 'l':
-		std::cout << " right parenthesis found \n";
+		//std::cout << " right parenthesis found \n";
 		return StateColumn::rightparenthesis;
 		break;
 	case 'm':
-		std::cout << " add found\n";
+		//std::cout << " add found\n";
 		return StateColumn::plus;
 		break;
 	case 'n':
-		std::cout << " subtract found\n";
+		//std::cout << " subtract found\n";
 		return StateColumn::minus;
 		break;
 	case 'o':
-		std::cout << " comma found \n";
+		//std::cout << " comma found \n";
 		return StateColumn::comma;
 		break;
 	case 'p':
-		std::cout << " semicolon found\n";
+		//std::cout << " semicolon found\n";
 		return StateColumn::semicolon;
 		break;
 	default:
-		std::cout << " something else was found \n";
+		//std::cout << " something else was found \n";
 		return StateColumn::other;
 		break;
 	}
@@ -195,6 +197,12 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 
 int main()
 {
+	ofstream file;
+	file.open("output.txt");
+	ifstream input;
+	
+
+
 	StateRow sT[28][17]{
 		{StateRow::intermediate5,StateRow::intermediate3,StateRow::mOp,StateRow::intermediate7,StateRow::intermediate11,StateRow::intermediate14,StateRow::start,StateRow::intermediate17,StateRow::error,StateRow::lbrace,StateRow::rbrace,StateRow::lparenthesis,StateRow::rparenthesis,StateRow::plusoperator,StateRow::minusoperator,StateRow::commaValue,StateRow::semicolonValue},
 		/*error*/{StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start},
@@ -233,12 +241,13 @@ int main()
 	char semi = ';';
 	char coma = ',';
 	char spce = ' ';
-
+	int step = 1;
 	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
 	StateRow currentState = StateRow::start;
 
 	while (currentpoint < read.length()) {
-
+		std::cout<<"STEP : " << step << std::endl;
+		step = step +1;
 		switch (currentState) {
 		case StateRow::start: {
 			std::cout << " state = start \n";
@@ -248,7 +257,7 @@ int main()
 		}
 		case StateRow::error: {
 			std::cout << " state = error \n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
@@ -257,21 +266,21 @@ int main()
 			tempString += read[currentpoint]; //adds the next character from input string into temp string
 			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate3: {
 			std::cout << " state = int.3 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::intValue: {
 			std::cout << " state = intValue \n";
 			std::cout << "finished token = " << tempString <<"\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is : " << tempString << "\n";
 			tempString = "";
 			break;
@@ -283,7 +292,7 @@ int main()
 			}
 			else {
 				tempString += read[currentpoint];
-				std::cout << "we are now in row : " << int(currentState) << std::endl;
+				//std::cout << "we are now in row : " << int(currentState) << std::endl;
 				std::cout << "new string is " << tempString << "\n";
 			}
 			break;
@@ -291,7 +300,8 @@ int main()
 		case StateRow::varValue: {
 			std::cout << " state = varValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
+			file << tempString << endl;
 			tempString = "";
 			currentpoint = currentpoint-1;
 			break;
@@ -299,93 +309,93 @@ int main()
 		case StateRow::intermediate7: {
 			std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate8: {
 			std::cout << " state = int.8 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate9: {
 			std::cout << " state = int.9 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::dOp: {
 			std::cout << " state = dOp \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			tempString = "";
 			break;
 		}
 		case StateRow::intermediate11: {
 			std::cout << " state = int.11 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::assignment: {
 			std::cout << " state = assignment \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			tempString = "";
 			break;
 		}
 		case StateRow::requals: {
 			std::cout << " state = requals \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::intermediate14: {
 			std::cout << " state = int.14 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rlessthan: {
 			std::cout << " state = rlessthan \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rlessthanequal: {
 			std::cout << " state = rlessthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::intermediate17: {
 			std::cout << " state = int.17 \n";
 			tempString += read[currentpoint];
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rgreaterthan: {
 			std::cout << " state = rgreaterthan \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
 			std::cout << " state = rgreaterthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::lbrace: {
 			std::cout << " state = lbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			tempString = "";
 			currentpoint = currentpoint - 1;
 			break;
@@ -393,50 +403,52 @@ int main()
 		case StateRow::rbrace: {
 			std::cout << " state = rbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::lparenthesis: {
 			std::cout << " state = lparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rparenthesis: {
 			std::cout << " state = rparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::plusoperator: {
 			std::cout << " state = plusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::minusoperator: {
 			std::cout << " state = minusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::commaValue: {
 			std::cout << " state = commaValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::semicolonValue: {
 			std::cout << " state = semicolonValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			//std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		}
 
 			currentState = sT[int(currentState)][int(findColumn(read[currentpoint++]))]; //sets current state to next place on the table
+			std::cout << "CURRENT STRING : " << tempString << std::endl;
 	}
-
+	file.close();
+	
 }
 
 //FOREACH TOKENS IN VECTOR

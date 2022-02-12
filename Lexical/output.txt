@@ -1,13 +1,23 @@
 CLASS
 Pgm1
+{
  CONST
 M
+= 
+3,
 N
+= 
+6;
 VAR
 X
  Y
  Z
   Y
+= 
+7;
 X
+= 
  * N
++
+18 
  Y

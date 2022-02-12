@@ -1,0 +1,68 @@
+CLASS
+Pgm1
+{
+CONST
+M
+=
+13
+,
+N
+=
+56
+;
+VAR
+X
+,
+Y
+,
+Z
+;
+Y
+=
+97
+;
+X
+=
+M
+*
+N
++
+18
+-
+Y
+;
+}
+CLASS	CLASS
+Pgm1	variable
+{	LB
+CONST	CONST
+M	variable
+=	assignment
+13	integer
+,	comma
+N	variable
+=	assignment
+56	integer
+;	semicolon
+VAR	VAR
+X	variable
+,	comma
+Y	variable
+,	comma
+Z	variable
+;	semicolon
+Y	variable
+=	assignment
+97	integer
+;	semicolon
+X	variable
+=	assignment
+M	variable
+*	multiply
+N	variable
++	add
+18	integer
+-	subtract
+Y	variable
+;	semicolon
+}	RB

@@ -196,8 +196,6 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 }
 
 
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-//method needed to check if at end state ??
 
 int main()
 {
@@ -210,7 +208,6 @@ int main()
 		ss << input.rdbuf();
 		read = ss.str();
 	}
-	
 
 
 	StateRow sT[28][17]{
@@ -253,12 +250,13 @@ int main()
 	char coma = ',';
 	char spce = ' ';
 	int step = 1;
+
 	//std::string read = "CLASS Pgm1 { ((CONST M = 13, N == 56; VAR X, Y, Z; Y = 97; X = M * N + 18 - Y; ))}"; //scan entire file save to this string
+	
+	
 	StateRow currentState = sT[0][int(findColumn(read[currentpoint]))];
-	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
-	StateRow currentState = StateRow::start;
-
-
+	
+	
 	while (currentpoint < read.length()) {
 		std::cout<<"STEP : " << step << std::endl;
 		step = step +1;
@@ -279,6 +277,7 @@ int main()
 			//tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -293,6 +292,7 @@ int main()
 			std::cout << "finished token = " << tempString <<"\n";
 			std::cout << "new string is : " << tempString << "\n";
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::integer, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
 		}
@@ -306,6 +306,33 @@ int main()
 			std::cout << " state = varValue \n";
 			std::cout << "finished token = " << tempString << "\n";
 			file << tempString << endl; 
+			if (tempString == "WHILE") {
+				tokens.push_back(Token(tempString, Token::tokenType::WHILE, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "FOR") {
+				tokens.push_back(Token(tempString, Token::tokenType::FOR, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "IF") {
+				tokens.push_back(Token(tempString, Token::tokenType::IF, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "THEN") {
+				tokens.push_back(Token(tempString, Token::tokenType::THEN, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "ELSE") {
+				tokens.push_back(Token(tempString, Token::tokenType::ELSE, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "CONST") {
+				tokens.push_back(Token(tempString, Token::tokenType::CONST, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "VAR") {
+				tokens.push_back(Token(tempString, Token::tokenType::VAR, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "CLASS") {
+				tokens.push_back(Token(tempString, Token::tokenType::CLASS, currentpoint)); //adds a new token to vector
+			}
+			else {
+				tokens.push_back(Token(tempString, Token::tokenType::variable, currentpoint)); //adds a new token to vector
+			}
 			currentpoint = currentpoint - 2;
 			break;
 		}
@@ -332,6 +359,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::divide, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -345,6 +373,7 @@ int main()
 			std::cout << " state = assignment \n";
 			std::cout << "finished token = " << tempString << "\n";
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::assignment, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
 		}
@@ -353,6 +382,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -367,6 +397,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -375,6 +406,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -388,7 +420,8 @@ int main()
 			std::cout << " state = rgreaterthan \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
+			file << tempString << endl;			
+			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -397,6 +430,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -405,6 +439,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::LB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -413,6 +448,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::RB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -421,6 +457,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::LP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -429,6 +466,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::RP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -437,6 +475,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::add, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -445,6 +484,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::subtract, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -453,6 +493,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::comma, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -461,6 +502,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			file << tempString << endl;
+			tokens.push_back(Token(tempString, Token::tokenType::semicolon, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
@@ -469,32 +511,21 @@ int main()
 			std::cout << "CURRENT STRING : " << tempString << std::endl;
 			std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
 	}
+
+
+	for (Token t : tokens)
+		file << t.tokenString << "\t" << t.printTokenType() << endl;
 	file.close();
 	
 }
 
 //FOREACH TOKENS IN VECTOR
 
-
-
-	//implement if or while  FINISHED?
-
 	//needs a way to read an entire input file, stop at each stop state, resume from next character after stop state
-
-	//needs a switch case to assign each state based on 2d array return
-
 	//needs a way to output each item to a table with correct type, address, and value
 
 
 /* */
-static void analyze() {
-
-}
-
-
-
-
-
 
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

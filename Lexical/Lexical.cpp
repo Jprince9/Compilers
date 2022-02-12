@@ -5,6 +5,7 @@
 #include <vector>
 #include "Token.h"
 
+
 //{L,D,*,/,=,<,B,>,other, { , } , ( , ) , + , - , , , ;}
 enum class StateColumn {
 	letter,
@@ -225,12 +226,15 @@ int main()
 		/*semicolonValue*/{StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start,StateRow::start},
 	};
 
-	std::string tempString;
+	std::string tempString = "";
 	std::vector<Token> tokens = std::vector<Token>();
 
 	int currentpoint = 0;
+	char semi = ';';
+	char coma = ',';
+	char spce = ' ';
 
-	std::string read = "CLASS*Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
+	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
 	StateRow currentState = StateRow::start;
 
 	while (currentpoint < read.length()) {
@@ -238,208 +242,199 @@ int main()
 		switch (currentState) {
 		case StateRow::start: {
 			std::cout << " state = start \n";
-			tempString = ""; //empties temp string
-			tempString += read[currentpoint]; //sets temp to first value
+			tempString += read[currentpoint];
+			std::cout << "start of string is : " << tempString << std::endl;
 			break;
 		}
 		case StateRow::error: {
 			std::cout << " state = error \n";
-
-			StateRow currentState = StateRow::start;
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::mOp: {
-			std::cout << " state = mOp \n"; //displays state to consolefor debugging
+			std::cout << " state = mOp \n"; //displays state to console for debugging
 			tempString += read[currentpoint]; //adds the next character from input string into temp string
 			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
-			StateRow currentState = StateRow::start; //restarts at beginning state
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate3: {
 			std::cout << " state = int.3 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::intValue: {
 			std::cout << " state = intValue \n";
 			std::cout << "finished token = " << tempString <<"\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is : " << tempString << "\n";
+			tempString = "";
 			break;
 		}
 		case StateRow::intermediate5: {
 			std::cout << " state = int.5 \n";
-			tempString += read[currentpoint];
+			if (read[currentpoint] == coma || read[currentpoint] == spce || read[currentpoint] == semi) {
+				std::cout << "DELIMITER FOUND" << std::endl;
+			}
+			else {
+				tempString += read[currentpoint];
+				std::cout << "we are now in row : " << int(currentState) << std::endl;
+				std::cout << "new string is " << tempString << "\n";
+			}
 			break;
 		}
 		case StateRow::varValue: {
 			std::cout << " state = varValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			tempString = "";
-			currentpoint--;
+			currentpoint = currentpoint-1;
 			break;
 		}
 		case StateRow::intermediate7: {
 			std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate8: {
 			std::cout << " state = int.8 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate9: {
 			std::cout << " state = int.9 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::dOp: {
 			std::cout << " state = dOp \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			tempString = "";
 			break;
 		}
 		case StateRow::intermediate11: {
 			std::cout << " state = int.11 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::assignment: {
 			std::cout << " state = assignment \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			tempString = "";
 			break;
 		}
 		case StateRow::requals: {
 			std::cout << " state = requals \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::intermediate14: {
 			std::cout << " state = int.14 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rlessthan: {
 			std::cout << " state = rlessthan \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rlessthanequal: {
 			std::cout << " state = rlessthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::intermediate17: {
 			std::cout << " state = int.17 \n";
 			tempString += read[currentpoint];
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rgreaterthan: {
 			std::cout << " state = rgreaterthan \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
 			std::cout << " state = rgreaterthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::lbrace: {
 			std::cout << " state = lbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
+			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rbrace: {
 			std::cout << " state = rbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::lparenthesis: {
 			std::cout << " state = lparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::rparenthesis: {
 			std::cout << " state = rparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::plusoperator: {
 			std::cout << " state = plusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::minusoperator: {
 			std::cout << " state = minusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::commaValue: {
 			std::cout << " state = commaValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		case StateRow::semicolonValue: {
 			std::cout << " state = semicolonValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			StateRow currentState = StateRow::start;
-			tempString = ""; //resets temp back to empty
-			currentpoint--; //backs the point up to before delimiter
+			std::cout << "we are now in row : " << int(currentState) << std::endl;
 			break;
 		}
 		}
 
-		currentState = sT[int(currentState)][int(findColumn(read[currentpoint++]))]; //sets current state to next place on the table
-
-		std::cout << "new string is " << tempString << "\n";
-																   //moves pointer to the next location in the string
+			currentState = sT[int(currentState)][int(findColumn(read[currentpoint++]))]; //sets current state to next place on the table
 	}
 
 }

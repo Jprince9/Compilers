@@ -1,23 +1,25 @@
 CLASS
 Pgm1
 {
- CONST
+CONST
 M
 = 
-3,
+13,
 N
 = 
-6;
+56;
 VAR
 X
  Y
  Z
   Y
 = 
-7;
+97;
 X
 = 
- * N
+M
+* N
 +
 18 
  Y
+5

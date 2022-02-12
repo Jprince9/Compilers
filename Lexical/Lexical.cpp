@@ -292,7 +292,10 @@ int main()
 		}
 		case StateRow::intermediate5: {
 			std::cout << " state = int.5 \n";
-			if (read[currentpoint] == coma || read[currentpoint] == spce || read[currentpoint] == semi) {
+			if (read[currentpoint] == spce) {
+				std::cout << "DELIMITER FOUND" << std::endl;
+			}
+			else if (read[currentpoint] == coma || read[currentpoint] == semi) {
 				std::cout << "DELIMITER FOUND" << std::endl;
 			}
 			else {
@@ -349,6 +352,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			file << tempString << endl;
 			tempString = "";
+			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::requals: {
@@ -403,7 +407,7 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";
 			file << tempString << endl;
 			tempString = "";
-			currentpoint = currentpoint - 1;
+			//currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rbrace: {

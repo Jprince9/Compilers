@@ -196,6 +196,9 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 }
 
 
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+//method needed to check if at end state ??
+
 int main()
 {
 	ofstream file;
@@ -245,12 +248,16 @@ int main()
 	std::vector<Token> tokens = std::vector<Token>();
 
 	int currentpoint = 0;
+
 	char semi = ';';
 	char coma = ',';
 	char spce = ' ';
 	int step = 1;
 	//std::string read = "CLASS Pgm1 { ((CONST M = 13, N == 56; VAR X, Y, Z; Y = 97; X = M * N + 18 - Y; ))}"; //scan entire file save to this string
 	StateRow currentState = sT[0][int(findColumn(read[currentpoint]))];
+	std::string read = "CLASS Pgm1 { CONST M = 13, N = 56; VAR X, Y, Z;  Y = 97; X = M * N + 18 - Y; }"; //scan entire file save to this string
+	StateRow currentState = StateRow::start;
+
 
 	while (currentpoint < read.length()) {
 		std::cout<<"STEP : " << step << std::endl;

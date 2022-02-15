@@ -276,7 +276,6 @@ int main()
 			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
 			//tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -291,7 +290,6 @@ int main()
 			std::cout << " state = intValue \n";
 			std::cout << "finished token = " << tempString <<"\n";
 			std::cout << "new string is : " << tempString << "\n";
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::integer, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
@@ -305,7 +303,6 @@ int main()
 		case StateRow::varValue: {
 			std::cout << " state = varValue \n";
 			std::cout << "finished token = " << tempString << "\n";
-			file << tempString << endl; 
 			if (tempString == "WHILE") {
 				tokens.push_back(Token(tempString, Token::tokenType::WHILE, currentpoint)); //adds a new token to vector
 			}
@@ -358,7 +355,6 @@ int main()
 			std::cout << " state = dOp \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::divide, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -372,7 +368,6 @@ int main()
 		case StateRow::assignment: {
 			std::cout << " state = assignment \n";
 			std::cout << "finished token = " << tempString << "\n";
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::assignment, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
@@ -381,7 +376,6 @@ int main()
 			std::cout << " state = requals \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -396,7 +390,6 @@ int main()
 			std::cout << " state = rlessthan \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -405,7 +398,6 @@ int main()
 			std::cout << " state = rlessthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -419,8 +411,7 @@ int main()
 		case StateRow::rgreaterthan: {
 			std::cout << " state = rgreaterthan \n";
 			std::cout << "finished token = " << tempString << "\n";
-			tempString += read[currentpoint];
-			file << tempString << endl;			
+			tempString += read[currentpoint];	
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -429,7 +420,6 @@ int main()
 			std::cout << " state = rgreaterthanequal \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -438,7 +428,6 @@ int main()
 			std::cout << " state = lbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::LB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -447,7 +436,6 @@ int main()
 			std::cout << " state = rbrace \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::RB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -456,7 +444,6 @@ int main()
 			std::cout << " state = lparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::LP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -465,7 +452,6 @@ int main()
 			std::cout << " state = rparenthesis \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::RP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -474,7 +460,6 @@ int main()
 			std::cout << " state = plusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::add, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -483,7 +468,6 @@ int main()
 			std::cout << " state = minusoperator \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::subtract, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -492,7 +476,6 @@ int main()
 			std::cout << " state = commaValue \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::comma, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -501,7 +484,6 @@ int main()
 			std::cout << " state = semicolonValue \n";
 			std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
-			file << tempString << endl;
 			tokens.push_back(Token(tempString, Token::tokenType::semicolon, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -519,9 +501,9 @@ int main()
 	
 }
 
-//FOREACH TOKENS IN VECTOR
 
-	//needs a way to read an entire input file, stop at each stop state, resume from next character after stop state
+
+
 	//needs a way to output each item to a table with correct type, address, and value
 
 

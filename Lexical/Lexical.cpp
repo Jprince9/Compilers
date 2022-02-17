@@ -77,7 +77,7 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 	else if (asciichar >= 97 && asciichar <= 122) { //letters
 		col = 'b';
 	}
-	else if (asciichar == 32) { //space
+	else if (asciichar == 32 || asciichar == 13 || asciichar == 10 || asciichar == 9) { //space
 		col = 'c';
 	}
 	else if (asciichar == 123) { //left brace
@@ -274,7 +274,6 @@ int main()
 		case StateRow::mOp: {
 			std::cout << " state = mOp \n"; //displays state to console for debugging
 			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
-			//tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;

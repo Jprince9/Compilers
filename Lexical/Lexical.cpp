@@ -6,6 +6,7 @@
 #include "Token.h"
 #include <fstream>
 #include <sstream>
+#include "Symbol.h"
 
 using namespace std;
 
@@ -195,8 +196,6 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 	}
 }
 
-
-
 int main()
 {
 	ofstream file;
@@ -258,50 +257,50 @@ int main()
 	
 	
 	while (currentpoint < read.length()) {
-		std::cout<<"STEP : " << step << std::endl;
+		//std::cout<<"STEP : " << step << std::endl;
 		step = step +1;
 		switch (currentState) {
 		case StateRow::start: {
-			std::cout << " state = start \n";
+			//std::cout << " state = start \n";
 			tempString = "";
 			break;
 		}
 		case StateRow::error: {
-			std::cout << " state = error \n";
-			std::cout << "new string is : " << tempString << "\n";
+			//std::cout << " state = error \n";
+			//std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::mOp: {
-			std::cout << " state = mOp \n"; //displays state to console for debugging
-			std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
+			//std::cout << " state = mOp \n"; //displays state to console for debugging
+			//std::cout << "finished token = " << tempString << "\n";  //displays the finished token to console for debugging
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::multiply, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate3: {
-			std::cout << " state = int.3 \n";
+			//std::cout << " state = int.3 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is : " << tempString << "\n";
+			//std::cout << "new string is : " << tempString << "\n";
 			break;
 		}
 		case StateRow::intValue: {
-			std::cout << " state = intValue \n";
-			std::cout << "finished token = " << tempString <<"\n";
-			std::cout << "new string is : " << tempString << "\n";
+			//std::cout << " state = intValue \n";
+			//std::cout << "finished token = " << tempString <<"\n";
+			//std::cout << "new string is : " << tempString << "\n";
 			tokens.push_back(Token(tempString, Token::tokenType::integer, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::intermediate5: {
-			std::cout << " state = int.5 \n";
-				tempString += read[currentpoint];
-				std::cout << "new string is " << tempString << "\n";
+			//std::cout << " state = int.5 \n";	
+			tempString += read[currentpoint];
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::varValue: {
-			std::cout << " state = varValue \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = varValue \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			if (tempString == "WHILE") {
 				tokens.push_back(Token(tempString, Token::tokenType::WHILE, currentpoint)); //adds a new token to vector
 			}
@@ -333,155 +332,155 @@ int main()
 			break;
 		}
 		case StateRow::intermediate7: {
-			std::cout << " state = int.7 \n";
+			//std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is " << tempString << "\n";
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate8: {
-			std::cout << " state = int.8 \n";
+			//std::cout << " state = int.8 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is " << tempString << "\n";
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate9: {
-			std::cout << " state = int.9 \n";
+			//std::cout << " state = int.9 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is " << tempString << "\n";
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::dOp: {
-			std::cout << " state = dOp \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = dOp \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::divide, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate11: {
-			std::cout << " state = int.11 \n";
+			//std::cout << " state = int.11 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is " << tempString << "\n";
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::assignment: {
-			std::cout << " state = assignment \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = assignment \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tokens.push_back(Token(tempString, Token::tokenType::assignment, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::requals: {
-			std::cout << " state = requals \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = requals \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate14: {
-			std::cout << " state = int.14 \n";
+			//std::cout << " state = int.14 \n";
 			tempString += read[currentpoint];
 			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rlessthan: {
-			std::cout << " state = rlessthan \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rlessthan \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rlessthanequal: {
-			std::cout << " state = rlessthanequal \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rlessthanequal \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::intermediate17: {
-			std::cout << " state = int.17 \n";
+			//std::cout << " state = int.17 \n";
 			tempString += read[currentpoint];
-			std::cout << "new string is " << tempString << "\n";
+			//std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::rgreaterthan: {
-			std::cout << " state = rgreaterthan \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rgreaterthan \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];	
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
-			std::cout << " state = rgreaterthanequal \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rgreaterthanequal \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::lbrace: {
-			std::cout << " state = lbrace \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = lbrace \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::LB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rbrace: {
-			std::cout << " state = rbrace \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rbrace \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::RB, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::lparenthesis: {
-			std::cout << " state = lparenthesis \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = lparenthesis \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::LP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::rparenthesis: {
-			std::cout << " state = rparenthesis \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = rparenthesis \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::RP, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::plusoperator: {
-			std::cout << " state = plusoperator \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = plusoperator \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::add, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::minusoperator: {
-			std::cout << " state = minusoperator \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = minusoperator \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::subtract, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::commaValue: {
-			std::cout << " state = commaValue \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = commaValue \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::comma, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
 		}
 		case StateRow::semicolonValue: {
-			std::cout << " state = semicolonValue \n";
-			std::cout << "finished token = " << tempString << "\n";
+			//std::cout << " state = semicolonValue \n";
+			//std::cout << "finished token = " << tempString << "\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::semicolon, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
@@ -489,16 +488,90 @@ int main()
 		}
 		}
 			currentState = sT[int(currentState)][int(findColumn(read[++currentpoint]))]; //sets current state to next place on the table
-			std::cout << "CURRENT STRING : " << tempString << std::endl;
-			std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
+			//std::cout << "CURRENT STRING : " << tempString << std::endl;
+			//std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
 	}
 
 
 	for (Token t : tokens)
 		file << t.tokenString << "\t" << t.printTokenType() << endl;
 	file.close();
-	
+
+	ofstream outputfile;
+	outputfile.open("symboltable");
+
+	std::vector<Symbol> symbolTable = std::vector<Symbol>();
+	int caddress = 0;
+	int daddress = 0;
+	std::cout << "Token" << "\t\t" << "Class" << "\t\t" << "Value" << "\t\t" << "Address" << "\t\t" << "Segment" << endl;
+	std::cout << "-----------------------------------------------------" << endl;
+	outputfile << "Token" << "\t\t" << "Class" << "\t\t" << "Value" << "\t\t" << "Address" << "\t\t" << "Segment" << endl;
+	outputfile << "-----------------------------------------------------------------------" << endl;
+	for (int x = 0; x < tokens.size(); x++) {
+		if (tokens[x].tempType == Token::tokenType::CLASS) {
+			x++;
+			symbolTable.push_back(Symbol(tokens[x].tokenString, "CLASS", NULL, caddress, "CS"));
+			caddress = caddress + 2;
+		}
+
+		if (tokens[x].tempType == Token::tokenType::CONST) {
+			x++;
+			symbolTable.push_back(Symbol(tokens[x].tokenString, "CONST", stoi(tokens[x+2].tokenString), daddress, "DS"));
+			daddress = daddress + 2;
+
+			while (tokens[x + 3].tokenString == ",") {
+				x = x + 4;
+				symbolTable.push_back(Symbol(tokens[x].tokenString, "CONST", stoi(tokens[x + 2].tokenString), daddress, "DS"));
+				daddress = daddress + 2;
+			}
+			x = x + 4;
+		}
+
+		if (tokens[x].tempType == Token::tokenType::VAR) {
+			x++;
+			while (tokens[x].tempType == Token::tokenType::variable) {
+				if (tokens[x + 1].tokenString == "=") {
+					symbolTable.push_back(Symbol(tokens[x].tokenString, "VAR", stoi(tokens[x + 2].tokenString), daddress, "DS"));
+					daddress = daddress + 2;
+					if (tokens[x + 3].tokenString == ",") {
+						x = x + 4;
+					}
+					else if (tokens[x + 3].tokenString == ";") {
+						x = x + 3;
+					}
+				}
+				else if (tokens[x + 1].tokenString == ",") {
+					symbolTable.push_back(Symbol(tokens[x].tokenString, "VAR", NULL, daddress, "DS"));
+					daddress = daddress + 2;
+					if (tokens[x + 1].tokenString == ",") {
+						x = x + 2;
+					}
+					else if (tokens[x + 1].tokenString == ";") {
+						x = x + 1;
+					}
+				}
+				else {
+					symbolTable.push_back(Symbol(tokens[x].tokenString, "VAR", NULL, daddress, "DS"));
+					daddress = daddress + 2;
+					x++;
+				}
+			}
+		}
+
+		if (tokens[x].tempType == Token::tokenType::integer) {
+			symbolTable.push_back(Symbol(tokens[x].tokenString, "numLit", stoi(tokens[x].tokenString), daddress, "DS"));
+			daddress = daddress + 2;
+		}
+
+	}
+
+	for (Symbol s : symbolTable) {
+		std::cout << s.symbolName << "\t" << s.className << "\t" << s.value << "\t" << s.address << "\t" << s.segment << endl;
+		outputfile << s.symbolName << "\t\t" << s.className << "\t\t" << s.value << "\t\t" << s.address << "\t\t" << s.segment << endl;
+	}
+	outputfile.close();
 }
+
 
 
 

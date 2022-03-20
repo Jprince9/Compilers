@@ -204,42 +204,77 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 
 
 int mapToken(Token token) {
+	//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-	switch (token.tempType) {
-	case Token::tokenType::relationalop:{
+	switch (token.tokenType) {
+	case Token::tokenType::relationalop: {
 		if (token.tokenString == ">") {
 			return 13;
 		}
-		else if(token.tokenString == "<"){
-
+		else if (token.tokenString == "<") {
+			return 14;
 		}
 		else if (token.tokenString == ">=") {
-
+			return 15;
 		}
 		else if (token.tokenString == "<=") {
-
+			return 16;
 		}
 		else if (token.tokenString == "!=") {
-
+			return 12;
 		}
 		else if (token.tokenString == "==") {
-
+			return 11;
 		}
 	}
-	case Token::tokenType::{
+	case Token::tokenType::assignment: {
+		return 1;
 	}
-	case Token::tokenType:{
+	case Token::tokenType::divide: {
+		return 7;
 	}
-	case Token::tokenType:{
+	case Token::tokenType::multiply: {
+		return 6;
 	}
-	case Token::tokenType:{
+	case Token::tokenType::add: {
+		return 2;
 	}
-	case Token::tokenType:{
+	case Token::tokenType::subtract: {
+		return 3;
 	}
-	case Token::tokenType:{
+	case Token::tokenType::LB: {
+		return 17;
+	}
+	case Token::tokenType::RB: {
+		return 18;
+	}
+	case Token::tokenType::LP: {
+		return 4;
+	}
+	case Token::tokenType::RP: {
+		return 5;
+	}
+	case Token::tokenType::IF: {
+		return 8;
+	}
+							 //case Token::tokenType::ELSE: {					
+							 //	return;					 
+							 //}
+							 //case Token::tokenType::FOR: {
+							 //	return;
+							 //}
+	case Token::tokenType::WHILE: {
+		return 10;
+	}
+	case Token::tokenType::THEN: {
+		return 9;
+	}
+	case Token::tokenType::semicolon: {
+		return 0;
+		//case Token::tokenType::LOOP: {
+		//	return 19;
 	}
 	}
-
 }
 
 
@@ -662,14 +697,19 @@ int main()
 			precedenceStack.push_back(tokens[x]);
 		}
 		else {
-			switch (pr[mapToken(tokens[x])[mapToken(precedenceStack.back())]) {
-				case gives{
-					//example push_back
+			switch (pr[mapToken(tokens[x])][mapToken(precedenceStack.back())]){
+			case gives:{
+				return;//example push_back
 				}
-				case takes{
-					//example pop_back until last gives
+			case takes:{
+				return;//example pop_back until last gives
 				}
-
+			case equal:{
+				return;	//example push_back
+				}
+			case none:{
+				return;	//example none
+				}
 		}
 
 		

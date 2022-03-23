@@ -30,6 +30,7 @@ public:
 		CONST,
 		VAR,
 		CLASS,
+		LOOP
 	};
 
 	tokenType tempType;

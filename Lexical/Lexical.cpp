@@ -10,6 +10,9 @@
 
 using namespace std;
 
+
+
+
 //{L,D,*,/,=,<,B,>,other, { , } , ( , ) , + , - , , , ;}
 enum class StateColumn {
 	letter,
@@ -204,9 +207,8 @@ StateColumn findColumn(char nextChar) {   //FINISH******
 
 
 int mapToken(Token token) {
-	//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-	switch (token.tokenType) {
+	switch (token.tempType) {
 	case Token::tokenType::relationalop: {
 		if (token.tokenString == ">") {
 			return 13;
@@ -257,12 +259,12 @@ int mapToken(Token token) {
 	case Token::tokenType::IF: {
 		return 8;
 	}
-							 //case Token::tokenType::ELSE: {					
-							 //	return;					 
-							 //}
-							 //case Token::tokenType::FOR: {
-							 //	return;
-							 //}
+	case Token::tokenType::ELSE: {					
+		return 20;					 
+	}
+	/*case Token::tokenType::FOR: {
+		return;
+	}*/
 	case Token::tokenType::WHILE: {
 		return 10;
 	}
@@ -271,8 +273,9 @@ int mapToken(Token token) {
 	}
 	case Token::tokenType::semicolon: {
 		return 0;
-		//case Token::tokenType::LOOP: {
-		//	return 19;
+	}
+	case Token::tokenType::LOOP: {
+		return 19;
 	}
 	}
 }
@@ -336,14 +339,14 @@ int main()
 	int step = 1;
 
 	//std::string read = "CLASS Pgm1 { ((CONST M = 13, N == 56; VAR X, Y, Z; Y = 97; X = M * N + 18 - Y; ))}"; //scan entire file save to this string
-	
-	
+
+
 	StateRow currentState = sT[0][int(findColumn(read[currentpoint]))];
-	
-	
+
+
 	while (currentpoint < read.length()) {
 		//std::cout<<"STEP : " << step << std::endl;
-		step = step +1;
+		step = step + 1;
 		switch (currentState) {
 		case StateRow::start: {
 			//std::cout << " state = start \n";
@@ -409,6 +412,9 @@ int main()
 			}
 			else if (tempString == "CLASS") {
 				tokens.push_back(Token(tempString, Token::tokenType::CLASS, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "LOOP") {
+				tokens.push_back(Token(tempString, Token::tokenType::LOOP, currentpoint)); //adds a new token to vector
 			}
 			else {
 				tokens.push_back(Token(tempString, Token::tokenType::variable, currentpoint)); //adds a new token to vector
@@ -494,7 +500,7 @@ int main()
 		case StateRow::rgreaterthan: {
 			//std::cout << " state = rgreaterthan \n";
 			//std::cout << "finished token = " << tempString << "\n";
-			tempString += read[currentpoint];	
+			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
 			currentpoint = currentpoint - 1;
 			break;
@@ -572,9 +578,9 @@ int main()
 			break;
 		}
 		}
-			currentState = sT[int(currentState)][int(findColumn(read[++currentpoint]))]; //sets current state to next place on the table
-			//std::cout << "CURRENT STRING : " << tempString << std::endl;
-			//std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
+		currentState = sT[int(currentState)][int(findColumn(read[++currentpoint]))]; //sets current state to next place on the table
+		//std::cout << "CURRENT STRING : " << tempString << std::endl;
+		//std::cout << "CURRENT CHARACTER : " << read[currentpoint] << std::endl;
 	}
 
 
@@ -601,7 +607,7 @@ int main()
 
 		if (tokens[x].tempType == Token::tokenType::CONST) {
 			x++;
-			symbolTable.push_back(Symbol(tokens[x].tokenString, "CONST", stoi(tokens[x+2].tokenString), daddress, "DS"));
+			symbolTable.push_back(Symbol(tokens[x].tokenString, "CONST", stoi(tokens[x + 2].tokenString), daddress, "DS"));
 			daddress = daddress + 2;
 
 			while (tokens[x + 3].tokenString == ",") {
@@ -655,67 +661,106 @@ int main()
 		outputfile << s.symbolName << "\t\t" << s.className << "\t\t" << s.value << "\t\t" << s.address << "\t\t" << s.segment << endl;
 	}
 	outputfile.close();
-	
+
 	//END LEXICAL ANALYZER
 
 	//BEGIN SYNTAX ANALYZER
-	std::vector<Token> precedenceStack = std::vector<Token>();
- 
-	
+	std::vector<Token> symbolStack = std::vector<Token>();
+	std::vector<Token> operatorStack = std::vector<Token>();
+
 	//< gives,  > takes 
-	//Terminator , = , + , - , ( , ) , * , / , IF, THEN, WHILE, ==, !=, >, <, >=, <=, {, }, LOOP
-	Precedence pr[20][20]{
-		/*terminator*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*=*/{Precedence::takes,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none,Precedence::none,Precedence::none},
-		/*+*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::none,Precedence::none,Precedence::none},
-		/*-*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none},
-		/*(*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*)*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/***/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none},
-		/*/*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none},
-		/*IF*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none},
-		/*Then*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none},
-		/*WHILE*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*==*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*!=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*>*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*<*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*>=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*<=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*{*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*}*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*LOOP*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none}
+	//; , = , + , - , ( , ) , * , / , IF, THEN, WHILE, ==, !=, >, <, >=, <=, {, }, LOOP, ELSE
+	Precedence pr[21][21]{
+		/*;*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*=*/{Precedence::takes,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*+*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*-*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*(*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*)*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/***/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*/*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*IF*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::equal},
+		/*Then*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::equal},
+		/*WHILE*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*==*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*!=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*>*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*<*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*>=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*<=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*{*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*}*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*LOOP*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
+		/*ELSE*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::equal,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none},
 	};
-	
-	
 
 	for (int x = 0; x < tokens.size(); x++) {
-		if (tokens[x].tempType == Token::tokenType::CLASS || tokens[x].tempType == Token::tokenType::VAR || tokens[x].tempType == Token::tokenType::CONST) {
+		if (tokens[x].tempType == Token::tokenType::CLASS) {
+			while (tokens[x++].tempType != Token::tokenType::LB);
+			continue;
+		}
+		if (tokens[x].tempType == Token::tokenType::VAR || tokens[x].tempType == Token::tokenType::CONST) {
+			while (tokens[x++].tempType != Token::tokenType::semicolon);
 			continue;
 		}
 		if (tokens[x].tempType == Token::tokenType::integer || tokens[x].tempType == Token::tokenType::variable) {
-			precedenceStack.push_back(tokens[x]);
+			symbolStack.push_back(tokens[x]);
 		}
 		else {
-			switch (pr[mapToken(tokens[x])][mapToken(precedenceStack.back())]){
-			case gives:{
-				return;//example push_back
-				}
-			case takes:{
-				return;//example pop_back until last gives
-				}
-			case equal:{
-				return;	//example push_back
-				}
-			case none:{
-				return;	//example none
-				}
-		}
+			switch (pr[mapToken(operatorStack.back())][mapToken(tokens[x])]) {
+			case Precedence::gives: {
+				operatorStack.push_back(tokens[x]);
+				//while loops
+				break;//example push_back
+			}
+			case Precedence::takes: {
+				switch (operatorStack.back().tempType) {
 
-		
-	}
+				case Token::tokenType::assignment: {
+
+					break;
+				}								 
+				case Token::tokenType::add: {
+
+				}
+				case Token::tokenType::divide: {
+
+				}
+				case Token::tokenType::multiply: {
+
+				}
+				case Token::tokenType::subtract:{
+					Token left = symbolStack.back();
+					symbolStack.pop_back();
+					Token right = symbolStack.back();
+					symbolStack.pop_back();
+					Token op = operatorStack.back();
+					operatorStack.pop_back();
+					Token destination = Token("test", Token::tokenType::variable, -1);
+					symbolStack.push_back(destination);
+					//Quad q = Quad(op, left, right, destination);  need to make vector for this
+					break;
+				}
+				}
+			}
+
+			case Precedence::equal: {
+
+				operatorStack.push_back(tokens[x]);
+				//continue; break; jumps
+				break;//example push_back
+
+			}
+
+			case Precedence::none: {
+				break;//example none
+			}
+			}
+			//< gives,  > takes	
+		}
 	}
 	//pop_back
+}
 
 //needs a way to output each item to a table with correct type, address, and value
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

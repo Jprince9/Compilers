@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include "Symbol.h"
+#include "Quad.h"
 
 using namespace std;
 
@@ -667,31 +668,34 @@ int main()
 	//BEGIN SYNTAX ANALYZER
 	std::vector<Token> symbolStack = std::vector<Token>();
 	std::vector<Token> operatorStack = std::vector<Token>();
+	std::vector<Quad> q = std::vector<Quad>();
 
 	//< gives,  > takes 
+	//1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  , 11   , 12, 13,14,15, 16, 17,18,19, 20  , 21
 	//; , = , + , - , ( , ) , * , / , IF, THEN, WHILE, ==, !=, >, <, >=, <=, {, }, LOOP, ELSE
 	Precedence pr[21][21]{
-		/*;*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*=*/{Precedence::takes,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none, Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*+*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::takes, Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*-*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::gives,Precedence::gives,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*(*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*)*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/***/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*/*/{Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::gives,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::takes,Precedence::none,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::takes,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*IF*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::equal,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::equal},
-		/*Then*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::equal},
-		/*WHILE*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*==*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*!=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*>*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*<*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*>=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*<=*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*{*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*}*/{Precedence::none,Precedence::none,Precedence::gives,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::gives,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*LOOP*/{Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none},
-		/*ELSE*/{Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::equal,Precedence::gives,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::none,Precedence::gives,Precedence::none,Precedence::none,Precedence::none},
+		//           ;						=					+					-					(					)					*				/						IF					THEN				WHILE				==					!=					>					<					>=					<=					{						}			LOOP				ELSE
+		/*;*/{Precedence::none,		Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*=*/{Precedence::takes,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	 Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*+*/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::gives,	Precedence::takes,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	 Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*-*/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::gives,	Precedence::takes,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*(*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*)*/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/***/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::gives,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*/*/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::gives,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*IF*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::equal,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::equal},
+		/*Then*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
+		/*WHILE*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*==*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*!=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*>*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*<*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*>=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*{*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*}*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*LOOP*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*ELSE*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
 	};
 
 	for (int x = 0; x < tokens.size(); x++) {
@@ -738,25 +742,55 @@ int main()
 					operatorStack.pop_back();
 					Token destination = Token("test", Token::tokenType::variable, -1);
 					symbolStack.push_back(destination);
-					//Quad q = Quad(op, left, right, destination);  need to make vector for this
+					Quad q = Quad(op, left, right, destination);
 					break;
 				}
+				case Token::tokenType::RP: {
+					//needs to collapse back to the Left parenthesis.
+					//x = (10 + 10 + 10 + 10);
+					//<   x = <( < 10 > + 10 > + 10 > + 10 > ) > ;
+					//<   x = <( < t1 + 10 > + 10 > + 10 > ) > ; 
+					//<   x = <(< <t2> + 10 > + 10 > ) > ; 
+					//<   x = <(< <t3> + 10 > ) > ; 
+					//<   x = < ( <t4> ) > ; 
+					break;
 				}
+				case Token::tokenType::relationalop:{
+					//
+					//collapse the <BE> before the THEN
+					//<		IF <BE> THEN <STMT>		> 
+					//place the temp <BE> into stack????
+					break;
+				}
+				//	 x = 10 + 10 + 10 + 10;
+				//	<x = <t1> + 10 > + 10 > + 10 >;
+				//  <x = <t2> + 10 > + 10 >;
+				//  <x = <t3> + 10 >;
+				//  <x = <t4> >;
+				// if it is a takes precedence, collapse left side (row) back to the last < , and do not push right side (column)
 			}
 
 			case Precedence::equal: {
-
+				switch (operatorStack.back().tempType) {
+				case Token::tokenType::IF: {
+					
+					//IF a + b == 10 THEN a = 10;
+					//<IF < a + b > < == 10 >  =  <THEN < a = 10 > >;
+					// IF <T1><==10>  = THEN <t2>  ;
+					// IF <BE>  = THEN <t2>
+					break;
+				}
 				operatorStack.push_back(tokens[x]);
 				//continue; break; jumps
-				break;//example push_back
+				break;
 
 			}
 
 			case Precedence::none: {
-				break;//example none
+				//errors if no relation?
+				break;
 			}
 			}
-			//< gives,  > takes	
 		}
 	}
 	//pop_back

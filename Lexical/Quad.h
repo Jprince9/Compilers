@@ -5,6 +5,7 @@
 
 class Quad
 {
+public:
 	enum class opType {
 		multiply,
 		divide,

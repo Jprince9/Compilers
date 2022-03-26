@@ -33,7 +33,32 @@ Quad::Quad(Token op, Token left, Token right, Token destination) {
 	}
 							 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 	case Token::tokenType::relationalop: {
-		this->op = opType::greaterthanequal;
+		switch (op.tokenString) {
+		case std::string::"==": {
+			this->op = opType::equalto;
+			break;
+		}
+		case std::string::"<=": {
+			this->op = opType::lessthanequal;
+			break;
+		}
+		case std::string::">=": {
+			this->op = opType::greaterthanequal;
+			break;
+		}
+		case std::string::"<": {
+			this->op = opType::lessthan;
+			break;
+		}
+		case std::string::">": {
+			this->op = opType::greaterthan;
+			break;
+		}
+		case std::string::"!=": {
+			this->op = opType::notequal;
+			break;
+		}
+		}
 		break;
 	}
 	}

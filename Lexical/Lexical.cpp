@@ -725,15 +725,16 @@ int main()
 					break;
 				}								 
 				case Token::tokenType::add: {
-
+					//if last thing pushed was a + and takes precedence over next in string < + >
 				}
 				case Token::tokenType::divide: {
-
+					//if last thing pushed was a / and takes precedence over next in string < / >
 				}
 				case Token::tokenType::multiply: {
-
+					//if last thing pushed was a * and takes precedence over next in string < * >
 				}
 				case Token::tokenType::subtract:{
+					//if last thing pushed was a - and takes precedence over next in string < - >
 					Token left = symbolStack.back();
 					symbolStack.pop_back();
 					Token right = symbolStack.back();
@@ -746,6 +747,18 @@ int main()
 					break;
 				}
 				case Token::tokenType::RP: {
+					operatorStack.pop_back(); // )
+					symbolStack.pop_back(); // temp inside parenthesis
+					operatorStack.pop_back(); // (
+
+					//what if,   x = (x + ((y + z) + w ))
+					//  x = (x + ((<t1>)
+					// x = (x + <(t1 + w)>
+					// x = (x + t2 )
+					// x = (<t3>)
+					// x = <t3>
+
+					//if last thing pushed was a ) and takes precedence over next in string < ) >
 					//needs to collapse back to the Left parenthesis.
 					//x = (10 + 10 + 10 + 10);
 					//<   x = <( < 10 > + 10 > + 10 > + 10 > ) > ;
@@ -753,13 +766,25 @@ int main()
 					//<   x = <(< <t2> + 10 > + 10 > ) > ; 
 					//<   x = <(< <t3> + 10 > ) > ; 
 					//<   x = < ( <t4> ) > ; 
+					//<x=t4>  
+					//quadcomplete
+
 					break;
 				}
 				case Token::tokenType::relationalop:{
+					Token left = symbolStack.back();
+					symbolStack.pop_back();
+					Token right = symbolStack.back();
+					symbolStack.pop_back();
+					Token op = operatorStack.back();
+					operatorStack.pop_back();
+					Token destination = Token("reloptest", Token::tokenType::variable, -2);
+					symbolStack.push_back(destination);
+					Quad q = Quad(op, left, right, destination);
 					//
 					//collapse the <BE> before the THEN
 					//<		IF <BE> THEN <STMT>		> 
-					//place the temp <BE> into stack????
+					//place the temp <BE> quad into stack????
 					break;
 				}
 				//	 x = 10 + 10 + 10 + 10;
@@ -771,8 +796,6 @@ int main()
 			}
 
 			case Precedence::equal: {
-				switch (operatorStack.back().tempType) {
-				case Token::tokenType::IF: {
 					
 					//IF a + b == 10 THEN a = 10;
 					//<IF < a + b > < == 10 >  =  <THEN < a = 10 > >;
@@ -787,13 +810,78 @@ int main()
 			}
 
 			case Precedence::none: {
-				//errors if no relation?
+				switch (operatorStack.back().tempType) {
+				case Token::tokenType::THEN: {
+					//there is an < IF <BE>  THEN <STMT>  >  to pop
+					symbolStack.pop_back(); //temp for <STMT> 
+					operatorStack.pop_back(); // THEN
+					symbolStack.pop_back(); // temp for <BE>
+					operatorStack.pop_back(); // IF
+					break;
+				}
+				case Token::tokenType::LOOP: {
+					//there is a While <BE>  LOOP  <STMT>
+					symbolStack.pop_back(); //temp for <STMT>
+					operatorStack.pop_back(); // LOOP
+					symbolStack.pop_back(); //temp for <BE>
+					operatorStack.pop_back(); //While
+					break;
+				}
+				case Token::tokenType::assignment: {
+					//symbol on left, assignment, symbol or temp on right
+					symbolStack.pop_back(); //symbol or temp
+					operatorStack.pop_back(); // = 
+					symbolStack.pop_back(); //symbol for destination
+					break;
+				}
+				case Token::tokenType::add: {
+					// can this happen???  I dont think so?
+					// a = b + c ;
+					break;
+				}
+				case Token::tokenType::subtract: {
+					// can this happen???  I dont think so?
+					break;
+				}
+				case Token::tokenType::multiply: {
+					// can this happen???  I dont think so?
+					break;
+				}
+				case Token::tokenType::divide: {
+					// can this happen???  I dont think so?
+					break;
+				}
+				case Token::tokenType::semicolon: {
+					// can this happen???
+
+					break;
+				}
+				case Token::tokenType::LP: {
+					//not needed?? will never see ( without a closing ) for the statement < ( ) >
+					break;
+				}
+				case Token::tokenType::RP: {
+					//some cases, 
+					// if ( STMT ) == ( STMT ) THEN
+					//doesnt pop entire stack? just back to LP
+					break;
+				}
+				case Token::tokenType::LB: {
+					//not needed?? will never see { without a closing } for the statement < {  } >
+					break;
+				}
+				case Token::tokenType::RB: {
+					//not needed? all quads will be generated for that the block
+					break;
+				}
+
+				//if no relation the quad is complete
+				//pop the entire stack into a quad
 				break;
 			}
 			}
 		}
 	}
-	//pop_back
 }
 
 //needs a way to output each item to a table with correct type, address, and value

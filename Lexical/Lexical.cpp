@@ -669,7 +669,8 @@ int main()
 	std::vector<Token> symbolStack = std::vector<Token>();
 	std::vector<Token> operatorStack = std::vector<Token>();
 	std::vector<Quad> q = std::vector<Quad>();
-
+	string temps[] = {"t1", "t2", "t3", "t4", "t5"}; //used for temp number assignment
+	int tempcount = 0;
 	//< gives,  > takes 
 	//1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  , 11   , 12, 13,14,15, 16, 17,18,19, 20  , 21
 	//; , = , + , - , ( , ) , * , / , IF, THEN, WHILE, ==, !=, >, <, >=, <=, {, }, LOOP, ELSE
@@ -697,95 +698,116 @@ int main()
 		/*LOOP*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*ELSE*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
 	};
-
+	//y = 10 + x ; 
+	//
 	for (int x = 0; x < tokens.size(); x++) {
 		if (tokens[x].tempType == Token::tokenType::CLASS) {
 			while (tokens[x++].tempType != Token::tokenType::LB);
+			std::cout << "skipping CLASS" << endl;
+			x--;
 			continue;
+		}
+		if (tokens[x].tempType == Token::tokenType::comma) {
+			std::cout << "skipping comma" << endl;
+			x += 1;
 		}
 		if (tokens[x].tempType == Token::tokenType::VAR || tokens[x].tempType == Token::tokenType::CONST) {
 			while (tokens[x++].tempType != Token::tokenType::semicolon);
+			std::cout << "skipping VAR/CONST" << endl;
+			x--;
 			continue;
 		}
 		if (tokens[x].tempType == Token::tokenType::integer || tokens[x].tempType == Token::tokenType::variable) {
 			symbolStack.push_back(tokens[x]);
+			std::cout << "symbol  " << tokens[x].tokenString << " pushed to symbol stack" << endl;
 		}
 		else {
+			if (operatorStack.size() == 0) {
+				operatorStack.push_back(tokens[x]);
+				continue;
+			}
+			std::cout << "top of stack " << operatorStack.back().tokenString << " next input " << tokens[x].tokenString << endl;
 			switch (pr[mapToken(operatorStack.back())][mapToken(tokens[x])]) {
 			case Precedence::gives: {
+				std::cout << "gives precedence case entered" << endl;  //output
 				operatorStack.push_back(tokens[x]);
+				std::cout << "operator " << tokens[x].printTokenType() << " pushed to operator stack" << endl;
 				//while loops
 				break;//example push_back
 			}
 			case Precedence::takes: {
+				std::cout << "takes precedence case entered" << endl;  //output
 				switch (operatorStack.back().tempType) {
 
 				case Token::tokenType::assignment: {
-
+					std::cout << "assignment case entered" << endl;  //output
+					if (tokens[x].tempType == Token::tokenType::semicolon) {
+						Token right = symbolStack.back();
+						symbolStack.pop_back();
+						Token left = symbolStack.back();
+						symbolStack.pop_back();
+						Token op = operatorStack.back();
+						operatorStack.pop_back();
+						Token destination = Token(temps[tempcount], Token::tokenType::variable, -1);
+						Quad q = Quad(op, left, right, right);
+						std::cout << q.toString() << endl;  //output
+						tempcount = 0;
+						x += 1;
+						continue;
+					}
 					break;
-				}								 
+				}
+
 				case Token::tokenType::add: {
+					std::cout << "addition case entered" << endl;  //output
 					//if last thing pushed was a + and takes precedence over next in string < + >
 				}
 				case Token::tokenType::divide: {
+					std::cout << "division case entered" << endl;  //output
 					//if last thing pushed was a / and takes precedence over next in string < / >
 				}
 				case Token::tokenType::multiply: {
+					std::cout << "multiply case entered" << endl;  //output
 					//if last thing pushed was a * and takes precedence over next in string < * >
 				}
-				case Token::tokenType::subtract:{
+				case Token::tokenType::subtract: {
+					std::cout << "subtract case entered" << endl;  //output
 					//if last thing pushed was a - and takes precedence over next in string < - >
-					Token left = symbolStack.back();
-					symbolStack.pop_back();
+					tempcount = tempcount + 1;
 					Token right = symbolStack.back();
+					symbolStack.pop_back();
+					Token left = symbolStack.back();
 					symbolStack.pop_back();
 					Token op = operatorStack.back();
 					operatorStack.pop_back();
-					Token destination = Token("test", Token::tokenType::variable, -1);
+					Token destination = Token(temps[tempcount], Token::tokenType::variable, -1);
 					symbolStack.push_back(destination);
 					Quad q = Quad(op, left, right, destination);
+					std::cout << q.toString() << endl;   //output
 					break;
 				}
+
 				case Token::tokenType::RP: {
+					std::cout << "right parenthesis case entered" << endl;  //output
 					operatorStack.pop_back(); // )
-					symbolStack.pop_back(); // temp inside parenthesis
-					operatorStack.pop_back(); // (
-
-					//what if,   x = (x + ((y + z) + w ))
-					//  x = (x + ((<t1>)
-					// x = (x + <(t1 + w)>
-					// x = (x + t2 )
-					// x = (<t3>)
-					// x = <t3>
-
-					//if last thing pushed was a ) and takes precedence over next in string < ) >
-					//needs to collapse back to the Left parenthesis.
-					//x = (10 + 10 + 10 + 10);
-					//<   x = <( < 10 > + 10 > + 10 > + 10 > ) > ;
-					//<   x = <( < t1 + 10 > + 10 > + 10 > ) > ; 
-					//<   x = <(< <t2> + 10 > + 10 > ) > ; 
-					//<   x = <(< <t3> + 10 > ) > ; 
-					//<   x = < ( <t4> ) > ; 
-					//<x=t4>  
-					//quadcomplete
+					operatorStack.pop_back(); // (  poofed out of existence
 
 					break;
 				}
-				case Token::tokenType::relationalop:{
-					Token left = symbolStack.back();
-					symbolStack.pop_back();
+				case Token::tokenType::relationalop: {
+					std::cout << "relational op case entered" << endl;  //output
 					Token right = symbolStack.back();
+					symbolStack.pop_back();
+					Token left = symbolStack.back();
 					symbolStack.pop_back();
 					Token op = operatorStack.back();
 					operatorStack.pop_back();
-					Token destination = Token("reloptest", Token::tokenType::variable, -2);
+					Token destination = Token(temps[tempcount], Token::tokenType::variable, -2);
 					symbolStack.push_back(destination);
 					Quad q = Quad(op, left, right, destination);
-					//
-					//collapse the <BE> before the THEN
-					//<		IF <BE> THEN <STMT>		> 
-					//place the temp <BE> quad into stack????
+					std::cout << q.toString() << endl;		//output
 					break;
+				}
 				}
 				//	 x = 10 + 10 + 10 + 10;
 				//	<x = <t1> + 10 > + 10 > + 10 >;
@@ -796,22 +818,28 @@ int main()
 			}
 
 			case Precedence::equal: {
-					
+				std::cout << "equal precedence case entered" << endl;  //output
 					//IF a + b == 10 THEN a = 10;
 					//<IF < a + b > < == 10 >  =  <THEN < a = 10 > >;
 					// IF <T1><==10>  = THEN <t2>  ;
 					// IF <BE>  = THEN <t2>
-					break;
-				}
 				operatorStack.push_back(tokens[x]);
-				//continue; break; jumps
+				std::cout << "operatorstack " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
 				break;
-
 			}
-
 			case Precedence::none: {
+				std::cout << "none precedence case entered" << endl;  //output
+				/*Class PGM{
+				IF <t1> THEN < {
+				<y = 10>;
+				<x = 20>;
+				<z = 30>;
+				*/
+				tempcount = 0; // sets temp strings back to beginning
+
 				switch (operatorStack.back().tempType) {
 				case Token::tokenType::THEN: {
+					std::cout << "THEN case entered" << endl;  //output
 					//there is an < IF <BE>  THEN <STMT>  >  to pop
 					symbolStack.pop_back(); //temp for <STMT> 
 					operatorStack.pop_back(); // THEN
@@ -820,6 +848,7 @@ int main()
 					break;
 				}
 				case Token::tokenType::LOOP: {
+					std::cout << "LOOP case entered" << endl;  //output
 					//there is a While <BE>  LOOP  <STMT>
 					symbolStack.pop_back(); //temp for <STMT>
 					operatorStack.pop_back(); // LOOP
@@ -828,57 +857,25 @@ int main()
 					break;
 				}
 				case Token::tokenType::assignment: {
+					std::cout << "assignment case entered" << endl;  //output
 					//symbol on left, assignment, symbol or temp on right
 					symbolStack.pop_back(); //symbol or temp
 					operatorStack.pop_back(); // = 
 					symbolStack.pop_back(); //symbol for destination
 					break;
 				}
-				case Token::tokenType::add: {
-					// can this happen???  I dont think so?
-					// a = b + c ;
-					break;
-				}
-				case Token::tokenType::subtract: {
-					// can this happen???  I dont think so?
-					break;
-				}
-				case Token::tokenType::multiply: {
-					// can this happen???  I dont think so?
-					break;
-				}
-				case Token::tokenType::divide: {
-					// can this happen???  I dont think so?
-					break;
-				}
 				case Token::tokenType::semicolon: {
+					std::cout << "semicolon case entered" << endl;  //output
 					// can this happen???
-
 					break;
 				}
-				case Token::tokenType::LP: {
-					//not needed?? will never see ( without a closing ) for the statement < ( ) >
-					break;
-				}
-				case Token::tokenType::RP: {
-					//some cases, 
-					// if ( STMT ) == ( STMT ) THEN
-					//doesnt pop entire stack? just back to LP
-					break;
-				}
-				case Token::tokenType::LB: {
-					//not needed?? will never see { without a closing } for the statement < {  } >
-					break;
-				}
-				case Token::tokenType::RB: {
-					//not needed? all quads will be generated for that the block
-					break;
-				}
-
 				//if no relation the quad is complete
 				//pop the entire stack into a quad
 				break;
+
+				}
 			}
+			default: cout << "default case entered" << endl;
 			}
 		}
 	}

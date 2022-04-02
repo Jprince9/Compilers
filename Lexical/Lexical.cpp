@@ -281,12 +281,49 @@ int mapToken(Token token) {
 	}
 }
 
+void PrintOPStack(std::vector<Token> vector) {
+	int x = vector.size();
+	int y = 0;
+	cout << "printing Operator Stack " << endl;
+	if(x > 0) {
+		while (x > 0) {
+			cout << vector[y].tokenString << endl;
+			x--;
+			y++;
+		}
+	};
+}
 
+void PrintSymbStack(std::vector<Token> vector) {
+	int x = vector.size();
+	int y = 0;
+	cout << "printing Symbol Stack " << endl;
+	if (x > 0) {
+		while (x > 0) {
+			cout << vector[y].tokenString << endl;
+			x--;
+			y++;
+		}
+	};
+}
 
+void PrintQuad(std::vector<Quad> quad) {
+	int x = quad.size();
+	int y = 0;
+	if (x > 0) {
+		cout << "printing Quads  " << endl;
+		while (x > 0) {
+			std::cout << quad[y].toString() << endl;
+			x--;
+			y++;
+		}
+	};
+}
 
 
 int main()
 {
+	string temps[] = { "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9", "t10", "t11", "t12", "t13", "t14", "t15" }; //used for temp number assignment
 	ofstream file;
 	file.open("output.txt");
 	ifstream input("input.txt");
@@ -426,7 +463,7 @@ int main()
 		case StateRow::intermediate7: {
 			//std::cout << " state = int.7 \n";
 			tempString += read[currentpoint];
-			//std::cout << "new string is " << tempString << "\n";
+			std::cout << "new string is " << tempString << "\n";
 			break;
 		}
 		case StateRow::intermediate8: {
@@ -444,9 +481,9 @@ int main()
 		case StateRow::dOp: {
 			//std::cout << " state = dOp \n";
 			//std::cout << "finished token = " << tempString << "\n";
-			tempString += read[currentpoint];
+			//tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::divide, currentpoint)); //adds a new token to vector
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::intermediate11: {
@@ -656,11 +693,15 @@ int main()
 		}
 
 	}
-
+	for (string t : temps) {
+		symbolTable.push_back(Symbol(t, "VAR", 0, daddress, "DS"));
+		daddress = daddress + 2;
+	}
 	for (Symbol s : symbolTable) {
 		std::cout << s.symbolName << "\t" << s.className << "\t" << s.value << "\t" << s.address << "\t" << s.segment << endl;
 		outputfile << s.symbolName << "\t\t" << s.className << "\t\t" << s.value << "\t\t" << s.address << "\t\t" << s.segment << endl;
 	}
+
 	outputfile.close();
 
 	//END LEXICAL ANALYZER
@@ -668,8 +709,7 @@ int main()
 	//BEGIN SYNTAX ANALYZER
 	std::vector<Token> symbolStack = std::vector<Token>();
 	std::vector<Token> operatorStack = std::vector<Token>();
-	std::vector<Quad> q = std::vector<Quad>();
-	string temps[] = {"t1", "t2", "t3", "t4", "t5"}; //used for temp number assignment
+	std::vector<Quad> quadlist = std::vector<Quad>();
 	int tempcount = 0;
 	//< gives,  > takes 
 	//1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  , 11   , 12, 13,14,15, 16, 17,18,19, 20  , 21
@@ -695,21 +735,34 @@ int main()
 		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*{*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*}*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*LOOP*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*LOOP*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*ELSE*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
 	};
-	//y = 10 + x ; 
-	//
+
 	for (int x = 0; x < tokens.size(); x++) {
 		if (tokens[x].tempType == Token::tokenType::CLASS) {
 			while (tokens[x++].tempType != Token::tokenType::LB);
 			std::cout << "skipping CLASS" << endl;
-			x--;
+			x = x - 2;
 			continue;
 		}
 		if (tokens[x].tempType == Token::tokenType::comma) {
 			std::cout << "skipping comma" << endl;
 			x += 1;
+		}
+		if (tokens[x].tempType == Token::tokenType::LB) 
+		{
+			if (operatorStack.size() > 0) {
+				if (operatorStack.back().tempType != Token::tokenType::THEN
+					|| operatorStack.back().tempType != Token::tokenType::ELSE || operatorStack.back().tempType != Token::tokenType::LOOP) {
+					std::cout << "skipping LB" << endl;
+					x += 1;
+				}
+			}
+			else {
+				std::cout << "skipping LB" << endl;
+				x += 1;
+			}
 		}
 		if (tokens[x].tempType == Token::tokenType::VAR || tokens[x].tempType == Token::tokenType::CONST) {
 			while (tokens[x++].tempType != Token::tokenType::semicolon);
@@ -719,10 +772,11 @@ int main()
 		}
 		if (tokens[x].tempType == Token::tokenType::integer || tokens[x].tempType == Token::tokenType::variable) {
 			symbolStack.push_back(tokens[x]);
-			std::cout << "symbol  " << tokens[x].tokenString << " pushed to symbol stack" << endl;
+			std::cout << "symbol  " << tokens[x].tokenString << "  pushed to symbol stack" << endl;
 		}
 		else {
 			if (operatorStack.size() == 0) {
+				std::cout << "stack was empty, pushing first item to operator stack " << tokens[x].tokenString << endl;
 				operatorStack.push_back(tokens[x]);
 				continue;
 			}
@@ -749,10 +803,12 @@ int main()
 						Token op = operatorStack.back();
 						operatorStack.pop_back();
 						Token destination = Token(temps[tempcount], Token::tokenType::variable, -1);
-						Quad q = Quad(op, left, right, right);
+						Quad q = Quad(op, left, right, left);
+						quadlist.push_back(q);
 						std::cout << q.toString() << endl;  //output
+						PrintOPStack(operatorStack);
+						PrintSymbStack(symbolStack);
 						tempcount = 0;
-						x += 1;
 						continue;
 					}
 					break;
@@ -773,7 +829,6 @@ int main()
 				case Token::tokenType::subtract: {
 					std::cout << "subtract case entered" << endl;  //output
 					//if last thing pushed was a - and takes precedence over next in string < - >
-					tempcount = tempcount + 1;
 					Token right = symbolStack.back();
 					symbolStack.pop_back();
 					Token left = symbolStack.back();
@@ -781,17 +836,27 @@ int main()
 					Token op = operatorStack.back();
 					operatorStack.pop_back();
 					Token destination = Token(temps[tempcount], Token::tokenType::variable, -1);
+					tempcount = tempcount + 1;
 					symbolStack.push_back(destination);
 					Quad q = Quad(op, left, right, destination);
+					quadlist.push_back(q);
 					std::cout << q.toString() << endl;   //output
+					x--;
 					break;
+					//continue;
 				}
 
 				case Token::tokenType::RP: {
 					std::cout << "right parenthesis case entered" << endl;  //output
+					PrintOPStack(operatorStack);
+					PrintSymbStack(symbolStack);
 					operatorStack.pop_back(); // )
 					operatorStack.pop_back(); // (  poofed out of existence
-
+					PrintOPStack(operatorStack);
+					PrintSymbStack(symbolStack);
+					if (operatorStack.size() >= 1) {
+						x--;
+					}
 					break;
 				}
 				case Token::tokenType::relationalop: {
@@ -803,28 +868,26 @@ int main()
 					Token op = operatorStack.back();
 					operatorStack.pop_back();
 					Token destination = Token(temps[tempcount], Token::tokenType::variable, -2);
+					tempcount = tempcount + 1;
 					symbolStack.push_back(destination);
 					Quad q = Quad(op, left, right, destination);
+					quadlist.push_back(q);
 					std::cout << q.toString() << endl;		//output
+					x--;
 					break;
 				}
 				}
-				//	 x = 10 + 10 + 10 + 10;
-				//	<x = <t1> + 10 > + 10 > + 10 >;
-				//  <x = <t2> + 10 > + 10 >;
-				//  <x = <t3> + 10 >;
-				//  <x = <t4> >;
-				// if it is a takes precedence, collapse left side (row) back to the last < , and do not push right side (column)
+
+				break;
 			}
 
 			case Precedence::equal: {
 				std::cout << "equal precedence case entered" << endl;  //output
-					//IF a + b == 10 THEN a = 10;
-					//<IF < a + b > < == 10 >  =  <THEN < a = 10 > >;
-					// IF <T1><==10>  = THEN <t2>  ;
-					// IF <BE>  = THEN <t2>
+
+				PrintOPStack(operatorStack);
+				PrintSymbStack(symbolStack);
 				operatorStack.push_back(tokens[x]);
-				std::cout << "operatorstack " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
+				std::cout << "operatorstack at time of equal precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
 				break;
 			}
 			case Precedence::none: {
@@ -835,6 +898,7 @@ int main()
 				<x = 20>;
 				<z = 30>;
 				*/
+				std::cout << "operatorstack at time of none precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
 				tempcount = 0; // sets temp strings back to beginning
 
 				switch (operatorStack.back().tempType) {
@@ -869,16 +933,23 @@ int main()
 					// can this happen???
 					break;
 				}
-				//if no relation the quad is complete
-				//pop the entire stack into a quad
-				break;
-
+				case Token::tokenType::RB: {
+					std::cout << "right brace case entered" << endl;
+					//if no relation the quad is complete
+					//pop the entire stack into a quad
+					break;
+				}						 
 				}
+				break;
 			}
 			default: cout << "default case entered" << endl;
 			}
+
 		}
 	}
+	PrintOPStack(operatorStack);
+	PrintSymbStack(symbolStack);
+	PrintQuad(quadlist);
 }
 
 //needs a way to output each item to a table with correct type, address, and value

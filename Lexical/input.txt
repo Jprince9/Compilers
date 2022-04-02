@@ -1,6 +1,9 @@
 CLASS Pgm1 { 
 	CONST M = 13, N = 56;
-	VAR X, Y, Z; 
+	VAR X, Y, Z, ans, a, Bob, Jane, b, c; 
 	Y = 97; 
-	X = M * N + 18 - Y; 
+	X = M * N + 18 - Y;
+	ans = a * ((Bob +Jane -10) /2 * 4) / (b + c);
+	a >= b;
+
 }

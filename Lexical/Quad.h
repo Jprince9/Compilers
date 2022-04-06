@@ -55,6 +55,8 @@ public:
 	~Quad();
 	Quad();
 	Quad(Token, Token, Token, Token);
+	Quad(Token, Token, Token);
+	Quad(Token);
 	opType op;
 	Token left, right, destination;
 };

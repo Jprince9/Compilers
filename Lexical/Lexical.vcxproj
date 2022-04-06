@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="Lexical.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="Token.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Label.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Symbol.h" />
     <ClInclude Include="Token.h" />

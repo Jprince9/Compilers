@@ -4,6 +4,6 @@ CLASS Pgm1 {
 	Y = 97; 
 	X = M * N + 18 - Y;
 	ans = a * ((Bob +Jane -10) /2 * 4) / (b + c);
-	a >= b;
+	IF 1 + 2 > 5 THEN { y = 3 + 4; Bob = 16; }
 
 }

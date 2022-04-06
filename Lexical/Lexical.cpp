@@ -8,7 +8,7 @@
 #include <sstream>
 #include "Symbol.h"
 #include "Quad.h"
-
+#include "Label.h"
 using namespace std;
 
 
@@ -515,18 +515,17 @@ int main()
 		}
 		case StateRow::rlessthan: {
 			//std::cout << " state = rlessthan \n";
-			//std::cout << "finished token = " << tempString << "\n";
-			tempString += read[currentpoint];
+			std::cout << "finished token = \"" << tempString << "\"\n";
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::rlessthanequal: {
 			//std::cout << " state = rlessthanequal \n";
-			//std::cout << "finished token = " << tempString << "\n";
+			std::cout << "finished token = \"" << tempString << "\"\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::intermediate17: {
@@ -537,18 +536,17 @@ int main()
 		}
 		case StateRow::rgreaterthan: {
 			//std::cout << " state = rgreaterthan \n";
-			//std::cout << "finished token = " << tempString << "\n";
-			tempString += read[currentpoint];
+			std::cout << "finished token = \"" << tempString << "\"\n";
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::rgreaterthanequal: {
 			//std::cout << " state = rgreaterthanequal \n";
-			//std::cout << "finished token = " << tempString << "\n";
+			std::cout << "finished token = \"" << tempString << "\"\n";
 			tempString += read[currentpoint];
 			tokens.push_back(Token(tempString, Token::tokenType::relationalop, currentpoint)); //adds a new token to vector
-			currentpoint = currentpoint - 1;
+			currentpoint = currentpoint - 2;
 			break;
 		}
 		case StateRow::lbrace: {
@@ -710,9 +708,11 @@ int main()
 	std::vector<Token> symbolStack = std::vector<Token>();
 	std::vector<Token> operatorStack = std::vector<Token>();
 	std::vector<Quad> quadlist = std::vector<Quad>();
+	std::vector<Label> fixup = std::vector<Label>();
+
 	int tempcount = 0;
 	//< gives,  > takes 
-	//1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10  , 11   , 12, 13,14,15, 16, 17,18,19, 20  , 21
+	//0 , 1 , 2 , 3 , 4 , 5,  6 , 7 , 8 , 9  , 10   ,  11, 12,13,14, 15, 16,17,18, 19  , 20
 	//; , = , + , - , ( , ) , * , / , IF, THEN, WHILE, ==, !=, >, <, >=, <=, {, }, LOOP, ELSE
 	Precedence pr[21][21]{
 		//           ;						=					+					-					(					)					*				/						IF					THEN				WHILE				==					!=					>					<					>=					<=					{						}			LOOP				ELSE
@@ -726,18 +726,20 @@ int main()
 		/*/*/{Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::gives,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*IF*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::equal,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::equal},
 		/*Then*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
-		/*WHILE*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*WHILE*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal,	Precedence::none},
 		/*==*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*!=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*>*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*<*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*>=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*{*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*{*/{Precedence::none,		Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*}*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*LOOP*/{Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*LOOP*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
 		/*ELSE*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
 	};
+	//IF() THEN { } ELSE { }
+	//IF <run> THEN <run> ELSE 
 
 	for (int x = 0; x < tokens.size(); x++) {
 		if (tokens[x].tempType == Token::tokenType::CLASS) {
@@ -755,8 +757,7 @@ int main()
 			if (operatorStack.size() > 0) {
 				if (operatorStack.back().tempType != Token::tokenType::THEN
 					|| operatorStack.back().tempType != Token::tokenType::ELSE || operatorStack.back().tempType != Token::tokenType::LOOP) {
-					std::cout << "skipping LB" << endl;
-					x += 1;
+					std::cout << "not skipping LB" << endl;
 				}
 			}
 			else {
@@ -778,6 +779,11 @@ int main()
 			if (operatorStack.size() == 0) {
 				std::cout << "stack was empty, pushing first item to operator stack " << tokens[x].tokenString << endl;
 				operatorStack.push_back(tokens[x]);
+				if (tokens[x].tempType == Token::tokenType::IF || tokens[x].tempType == Token::tokenType::WHILE) {
+					Quad q = Quad(tokens[x]);
+					quadlist.push_back(q);
+					fixup.push_back(Label("L1")); //move later
+				}
 				continue;
 			}
 			std::cout << "top of stack " << operatorStack.back().tokenString << " next input " << tokens[x].tokenString << endl;
@@ -789,8 +795,9 @@ int main()
 				//while loops
 				break;//example push_back
 			}
-			case Precedence::takes: {
+			case Precedence::takes: { 
 				std::cout << "takes precedence case entered" << endl;  //output
+				std::cout << mapToken(operatorStack.back()) << " " << mapToken(tokens[x]) << endl;
 				switch (operatorStack.back().tempType) {
 
 				case Token::tokenType::assignment: {
@@ -876,28 +883,28 @@ int main()
 					x--;
 					break;
 				}
+				default: cout << "case not handled" << endl;
 				}
-
 				break;
 			}
 
 			case Precedence::equal: {
 				std::cout << "equal precedence case entered" << endl;  //output
-
+				tempcount = 0;
 				PrintOPStack(operatorStack);
 				PrintSymbStack(symbolStack);
 				operatorStack.push_back(tokens[x]);
 				std::cout << "operatorstack at time of equal precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
+				
+				
+				
 				break;
+
+
 			}
 			case Precedence::none: {
 				std::cout << "none precedence case entered" << endl;  //output
-				/*Class PGM{
-				IF <t1> THEN < {
-				<y = 10>;
-				<x = 20>;
-				<z = 30>;
-				*/
+				std::cout << "printing locations " <<  mapToken(operatorStack.back()) << " " << mapToken(tokens[x]) << endl;
 				std::cout << "operatorstack at time of none precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
 				tempcount = 0; // sets temp strings back to beginning
 
@@ -938,7 +945,19 @@ int main()
 					//if no relation the quad is complete
 					//pop the entire stack into a quad
 					break;
-				}						 
+				}	
+				case Token::tokenType::LB: {
+					std::cout << "left brace case entered" << endl;
+					if (tokens[x].tempType == Token::tokenType::RB) {
+
+					}
+					else if (tokens[x].tempType == Token::tokenType::semicolon) {
+						
+					}
+					//if no relation the quad is complete
+					//pop the entire stack into a quad
+					break;
+				}
 				}
 				break;
 			}
@@ -955,3 +974,8 @@ int main()
 //needs a way to output each item to a table with correct type, address, and value
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
+
+//create function to find the opposite relationnal operator when given a relational op  Token::temptype
+//look at the back of the quad stack, take that operator and push into function parameter
+//quad then created, label on left, operator, oposite relational op
+//pop symbol stack once, to remove t2, directly after completeing the THEN quad

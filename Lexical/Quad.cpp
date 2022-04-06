@@ -31,6 +31,10 @@ Quad::Quad(Token op, Token left, Token right, Token destination) {
 		this->op = opType::IF;
 		break;
 	}
+	case Token::tokenType::WHILE: {
+		this->op = opType::WHILE;
+		break;
+	}
 	case Token::tokenType::relationalop: {
 		if(op.tokenString == "==") {
 			this->op = opType::equalto;
@@ -50,6 +54,23 @@ Quad::Quad(Token op, Token left, Token right, Token destination) {
 		else if(op.tokenString == "!=")
 			this->op = opType::notequal;
 		}
+	}
+}
+
+Quad::Quad(Token op){
+	this->destination = Token("?", Token::tokenType::none, -5);
+	this->left = Token("?", Token::tokenType::none, -5);
+	this->right = Token("?", Token::tokenType::none, -5);
+	switch (op.tempType) {
+
+	case Token::tokenType::IF: {
+		this->op = opType::IF;
+		break;
+	}
+	case Token::tokenType::WHILE: {
+		this->op = opType::WHILE;
+		break;
+	}
 	}
 }
 

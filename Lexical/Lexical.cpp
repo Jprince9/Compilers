@@ -1,4 +1,4 @@
-// Lexical.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿// Lexical.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
@@ -319,6 +319,45 @@ void PrintQuad(std::vector<Quad> quad) {
 		}
 	};
 }
+
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Token reverserelational(Quad::opType input) {
+	Token tok = Token();
+	std::string reverse;
+	switch (input)
+	{
+	case Quad::opType::lessthan: {
+		tok.tokenString = ">=";
+		break;
+	}
+
+	case Quad::opType::greaterthan: {
+		tok.tokenString = "<=";
+		break;
+	}
+	case Quad::opType::lessthanequal: {
+		tok.tokenString = ">";
+		break;
+	}
+	case Quad::opType::greaterthanequal: {
+		tok.tokenString = "<";
+		break;
+	}
+	case Quad::opType::equalto: {
+		tok.tokenString = "!=";
+		break;
+	}
+	case Quad::opType::notequal: {
+		tok.tokenString = "==";
+		break;
+	}
+
+	}
+	return tok;
+}
+
+
 
 
 int main()
@@ -888,14 +927,27 @@ int main()
 				break;
 			}
 
-			case Precedence::equal: {
+			case Precedence::equal: {  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 				std::cout << "equal precedence case entered" << endl;  //output
 				tempcount = 0;
 				PrintOPStack(operatorStack);
 				PrintSymbStack(symbolStack);
 				operatorStack.push_back(tokens[x]);
+
+				//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+				if (tokens[x].tempType == Token::tokenType::THEN) {
+					Token tok = Token();
+					Token op = operatorStack.back();
+					tok = reverserelational(quadlist.back().op);
+					Quad q = Quad(op, label, tok, ?); // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+					quadlist.push_back(q);
+					symbolStack.pop_back();
+				}
+
+
 				std::cout << "operatorstack at time of equal precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
 				
+
 				
 				
 				break;
@@ -975,7 +1027,8 @@ int main()
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-//create function to find the opposite relationnal operator when given a relational op  Token::temptype
-//look at the back of the quad stack, take that operator and push into function parameter
-//quad then created, label on left, operator, oposite relational op
-//pop symbol stack once, to remove t2, directly after completeing the THEN quad
+
+//create function to find the opposite relationnal operator when given a relational op  Token::temptype  ✓
+//look at the back of the quad stack, take that operator and push into function parameter    ✓
+//quad then created, label on left, operator, oposite relational op   ✓
+//pop symbol stack once, to remove t2, directly after completeing the THEN quad ✓

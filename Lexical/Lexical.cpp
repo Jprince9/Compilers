@@ -324,7 +324,7 @@ void PrintQuad(std::vector<Quad> quad) {
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Token reverserelational(Quad::opType input) {
 	Token tok = Token();
-	std::string reverse;
+	tok.tempType = Token::tokenType::relationalop;
 	switch (input)
 	{
 	case Quad::opType::lessthan: {
@@ -743,12 +743,29 @@ int main()
 
 	//END LEXICAL ANALYZER
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//BEGIN SYNTAX ANALYZER
 	std::vector<Token> symbolStack = std::vector<Token>();
 	std::vector<Token> operatorStack = std::vector<Token>();
 	std::vector<Quad> quadlist = std::vector<Quad>();
 	std::vector<Label> fixup = std::vector<Label>();
-
+	std::vector<Label> endstack = std::vector<Label>();
 	int tempcount = 0;
 	//< gives,  > takes 
 	//0 , 1 , 2 , 3 , 4 , 5,  6 , 7 , 8 , 9  , 10   ,  11, 12,13,14, 15, 16,17,18, 19  , 20
@@ -772,7 +789,7 @@ int main()
 		/*<*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*>=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*{*/{Precedence::none,		Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*{*/{Precedence::none,		Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*}*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*LOOP*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
 		/*ELSE*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::equal,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none},
@@ -821,7 +838,6 @@ int main()
 				if (tokens[x].tempType == Token::tokenType::IF || tokens[x].tempType == Token::tokenType::WHILE) {
 					Quad q = Quad(tokens[x]);
 					quadlist.push_back(q);
-					fixup.push_back(Label("L1")); //move later
 				}
 				continue;
 			}
@@ -927,29 +943,44 @@ int main()
 				break;
 			}
 
-			case Precedence::equal: {  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+			case Precedence::equal: {
 				std::cout << "equal precedence case entered" << endl;  //output
-				tempcount = 0;
 				PrintOPStack(operatorStack);
 				PrintSymbStack(symbolStack);
 				operatorStack.push_back(tokens[x]);
 
-				//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-				if (tokens[x].tempType == Token::tokenType::THEN) {
-					Token tok = Token();
+
+				if (operatorStack.back().tempType == Token::tokenType::THEN) {
+					std::cout << "then case entered for equal precedence" << endl;
+					Label l = Label();
+					fixup.push_back(l);
 					Token op = operatorStack.back();
-					tok = reverserelational(quadlist.back().op);
-					Quad q = Quad(op, label, tok, ?); // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+					Token reverseop = reverserelational(quadlist.back().op);
+					Quad q = Quad(op, l, reverseop);
 					quadlist.push_back(q);
 					symbolStack.pop_back();
+					std::cout << "\n\n &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& \n\n" << endl;
+					std::cout << q.toString() << endl;
+				}
+				//******************************************************************************************************
+				if (operatorStack.back().tempType == Token::tokenType::ELSE) {
+					std::cout << "ELSE case entered for equal precedence" << endl;
+					Label l = Label();
+					endstack.push_back(l);
+					quadlist.push_back(Quad(endstack.back()));
+					fixup.pop_back();
+					Token op = operatorStack.back();
+					Token reverseop = reverserelational(quadlist.back().op);
+					Quad q = Quad(op, l, reverseop);
+					quadlist.push_back(q);
+					//symbolStack.pop_back();
+					std::cout << "\n\n &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& \n\n" << endl;
+					//std::cout << q.toString() << endl;
 				}
 
 
 				std::cout << "operatorstack at time of equal precedence " << operatorStack.back().tokenString << " next in " << tokens[x].tokenString << endl;
-				
 
-				
-				
 				break;
 
 
@@ -962,13 +993,38 @@ int main()
 
 				switch (operatorStack.back().tempType) {
 				case Token::tokenType::THEN: {
+
+					//*************************************************************************************
 					std::cout << "THEN case entered" << endl;  //output
-					//there is an < IF <BE>  THEN <STMT>  >  to pop
-					symbolStack.pop_back(); //temp for <STMT> 
-					operatorStack.pop_back(); // THEN
-					symbolStack.pop_back(); // temp for <BE>
-					operatorStack.pop_back(); // IF
-					break;
+					if (tokens[x+1].tempType == Token::tokenType::ELSE) {
+						
+						
+						break;
+					}
+					else {
+						//there is an < IF <BE>  THEN <STMT> ELSE 
+						operatorStack.pop_back(); // THEN
+						operatorStack.pop_back(); // IF
+						Quad q = Quad(fixup.back());
+						quadlist.push_back(q);
+						fixup.pop_back();
+						break;
+					}
+				}
+
+				//*************************************************************************************
+				case Token::tokenType::ELSE: {
+					std::cout << "ELSE case entered" << endl;  //output
+						//there is an < IF <BE>  THEN <STMT>  >  to pop
+						//symbolStack.pop_back(); //temp for <STMT> 
+						operatorStack.pop_back(); // THEN
+						//symbolStack.pop_back(); // temp for <BE>
+						operatorStack.pop_back(); // IF
+						operatorStack.pop_back(); // ELSE
+						Quad q = Quad(endstack.back());
+						quadlist.push_back(q);
+						endstack.pop_back();
+						break;
 				}
 				case Token::tokenType::LOOP: {
 					std::cout << "LOOP case entered" << endl;  //output
@@ -1001,7 +1057,8 @@ int main()
 				case Token::tokenType::LB: {
 					std::cout << "left brace case entered" << endl;
 					if (tokens[x].tempType == Token::tokenType::RB) {
-
+						operatorStack.pop_back();
+						x--;
 					}
 					else if (tokens[x].tempType == Token::tokenType::semicolon) {
 						
@@ -1028,7 +1085,4 @@ int main()
 // Debug program: F5 or Debug > Start Debugging menu
 
 
-//create function to find the opposite relationnal operator when given a relational op  Token::temptype  ✓
-//look at the back of the quad stack, take that operator and push into function parameter    ✓
-//quad then created, label on left, operator, oposite relational op   ✓
-//pop symbol stack once, to remove t2, directly after completeing the THEN quad ✓
+//debug the IF THEN ELSE for NONE precedence, and Equal precedence

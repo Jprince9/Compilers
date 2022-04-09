@@ -75,7 +75,7 @@ IF	IF
 5	integer
 THEN	THEN
 {	LB
-y	variable
+Y	variable
 =	assignment
 3	integer
 +	add
@@ -86,4 +86,17 @@ Bob	variable
 16	integer
 ;	semicolon
 }	RB
+ELSE	ELSE
+{	LB
+X	variable
+=	assignment
+1	integer
+;	semicolon
+}	RB
+Y	variable
+=	assignment
+X	variable
+*	multiply
+2	integer
+;	semicolon
 }	RB

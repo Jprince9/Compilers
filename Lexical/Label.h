@@ -2,14 +2,23 @@
 #include <stdio.h>
 #include <string>
 
+
+
 class Label
 {
+
 public:
-	
+	static int labelcount;
 	std::string toString() {
-		return "label complete ";
+		return "Label: " + this->ll;
 	};
+
+
 	~Label();
 	Label();
-	Label(std::string label);
+	Label(int);
+	std::string ll;
+	int address = 0;
+	void setAddress(int address); //define later in cpp
+	int getAddress(); //define later in cpp
 };

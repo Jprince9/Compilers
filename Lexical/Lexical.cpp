@@ -847,6 +847,11 @@ int main()
 				std::cout << "gives precedence case entered" << endl;  //output
 				operatorStack.push_back(tokens[x]);
 				std::cout << "operator " << tokens[x].printTokenType() << " pushed to operator stack" << endl;
+
+				if (tokens[x].tempType == Token::tokenType::IF || tokens[x].tempType == Token::tokenType::WHILE) {
+					Quad q = Quad(tokens[x]);
+					quadlist.push_back(q);
+				}
 				//while loops
 				break;//example push_back
 			}
@@ -967,13 +972,12 @@ int main()
 					std::cout << "ELSE case entered for equal precedence" << endl;
 					Label l = Label();
 					endstack.push_back(l);
-					quadlist.push_back(Quad(endstack.back()));
-					fixup.pop_back();
 					Token op = operatorStack.back();
 					Token reverseop = reverserelational(quadlist.back().op);
 					Quad q = Quad(op, l, reverseop);
 					quadlist.push_back(q);
-					//symbolStack.pop_back();
+					quadlist.push_back(Quad(fixup.back()));
+					fixup.pop_back();
 					std::cout << "\n\n &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& \n\n" << endl;
 					//std::cout << q.toString() << endl;
 				}

@@ -63,6 +63,7 @@ public:
 		case tokenType::CONST: return "CONST";
 		case tokenType::VAR: return "VAR";
 		case tokenType::CLASS: return "CLASS";
+		case tokenType::LOOP: return "LOOP";
 		default: return "not a token";
 		}
 	};

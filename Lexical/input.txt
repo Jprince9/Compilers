@@ -11,10 +11,14 @@ CLASS Pgm1 {
 		ELSE { X = 17; }
 	 }
 	ELSE {		
-		IF 18 + 19 < 20 
+		IF 18 + 19 > 20 
 		THEN { Y = 21; }
 		ELSE { X = 22; }
 	     }
+X = 1;
+WHILE 5<10 LOOP { 
+X = X + 1;
+}
 Y = X * 2;
 }
 

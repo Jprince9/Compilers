@@ -28,7 +28,8 @@ public:
 		ELSE,
 		ERROR,
 		NOOP,
-		LOOP
+		LOOP,
+		jmp
 	};
 
 	std::string printopType() {
@@ -77,7 +78,7 @@ public:
 		case Quad::opType::ELSE: return "ELSE";
 		case Quad::opType::NOOP: return "NO OP";
 		case Quad::opType::ERROR: return "ERROR";
-		default: return "not an OP";
+		default: return "not an OP" + (int)reverseop;
 		}
 	}
 
@@ -98,20 +99,22 @@ public:
 		case Quad::opType::notequal:
 			return "quad complete " + this->destination.tokenString + " " + this->left.tokenString + " " + this->printopType() + " " + this->right.tokenString;
 
-		case Quad::opType::WHILE:
 		case Quad::opType::LOOP:
+			return "quad complete " + this->printopType() + " " + this->label.toString() + " " + this->printreverseopType();
+		case Quad::opType::WHILE:
 		case Quad::opType::FOR:
 		case Quad::opType::IF:
 			return "quad complete " + this->destination.tokenString + " " + this->left.tokenString + " " + this->printopType() + " " + this->right.tokenString;
 
 
 		case Quad::opType::THEN:
-		case Quad::opType::ELSE:
 			return "quad complete " + this->printopType() + " " + this->label.toString() + " " + this->printreverseopType();
+		case Quad::opType::ELSE:
+			return "quad complete " + this->printopType() + " " + this->label.toString();
 		case Quad::opType::NOOP:
 			return "quad complete " + this->label.toString();
 		case Quad::opType::ERROR:
-			return "Quad ERROR ";
+			return "Quad ERROR " + this->printopType();
 		}
 	}
 
@@ -228,7 +231,7 @@ public:
 
 
 		case Quad::opType::assignment: {
-			if (this->left.tempType != Token::tokenType::integer) {
+			if (this->right.tempType != Token::tokenType::integer) {
 				output += "mov ax, [" + this->right.tokenString + "]\n";
 			}
 			else {
@@ -246,10 +249,21 @@ public:
 		case Quad::opType::greaterthanequal:;
 		case Quad::opType::equalto:;
 		case Quad::opType::notequal:
-			//covers all 
-			//mov
-			//mov
-			//cmp
+			if (this->left.tempType != Token::tokenType::integer) {
+				output += "mov ax, [" + this->left.tokenString + "]\n";
+			}
+			else {
+				output += "mov ax, " + this->left.tokenString + "\n";
+			}
+
+			if (this->right.tempType != Token::tokenType::integer) {
+				output += "mov bx, [" + this->right.tokenString + "]\n";
+			}
+			else {
+				output += "mov bx, " + this->right.tokenString + "\n";
+			}
+
+			output += "cmp ax" + this->destination.tokenString + ", bx\n";
 			break;
 		case Quad::opType::NOOP:
 
@@ -271,6 +285,8 @@ public:
 	Quad(Token, Label, Token);
 	Quad(Token);
 	Quad(Label);
+	Quad(Token, Label);
+	Quad(opType, Label);
 	Label label;
 	opType reverseop;
 	opType op;

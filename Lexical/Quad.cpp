@@ -3,6 +3,10 @@
 Quad::Quad() {
 	this->label = Label(0);
 }
+Quad::Quad(opType op, Label l) {
+	this->label = l;
+
+}
 Quad::Quad(Token op, Token left, Token right, Token destination) {
 	this->left = left;
 	this->right = right;
@@ -29,6 +33,11 @@ Quad::Quad(Token op, Label l, Token reverseop) {
 Quad::Quad(Label l){
 	this->label = l;
 	this->op = opType::NOOP;
+}
+
+Quad::Quad(Token op, Label l) {
+	this->label = l;
+	this->op = Quad::getOpType(op);
 }
 
 Quad::~Quad() {
@@ -63,6 +72,9 @@ Quad::opType Quad::getOpType(Token op) {
 	}
 	case Token::tokenType::ELSE: {
 		return opType::ELSE;
+	}
+	case Token::tokenType::LOOP:{
+		return opType::LOOP;				   
 	}
 	case Token::tokenType::relationalop: {
 		if (op.tokenString == "==") {

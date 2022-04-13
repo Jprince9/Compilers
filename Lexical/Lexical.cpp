@@ -783,12 +783,12 @@ int main()
 		/*IF*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::equal,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::equal},
 		/*Then*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
 		/*WHILE*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal,	Precedence::none},
-		/*==*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*!=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*>*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*<*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*>=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
-		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
+		/*==*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
+		/*!=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
+		/*>*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
+		/*<*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
+		/*>=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::takes,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
+		/*<=*/{Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::takes,	Precedence::none},
 		/*{*/{Precedence::none,		Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*}*/{Precedence::none,		Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none},
 		/*LOOP*/{Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::none,	Precedence::gives,	Precedence::none,	Precedence::none,	Precedence::equal},
@@ -835,9 +835,17 @@ int main()
 			if (operatorStack.size() == 0) {
 				std::cout << "stack was empty, pushing first item to operator stack " << tokens[x].tokenString << endl;
 				operatorStack.push_back(tokens[x]);
-				if (tokens[x].tempType == Token::tokenType::IF || tokens[x].tempType == Token::tokenType::WHILE) {
+				if (tokens[x].tempType == Token::tokenType::IF) {
 					Quad q = Quad(tokens[x]);
 					quadlist.push_back(q);
+				}
+				else if (tokens[x].tempType == Token::tokenType::WHILE) {
+					Label label = Label();
+					fixup.push_back(label);
+					Quad q = Quad(tokens[x]);
+					quadlist.push_back(q);
+					Quad w = Quad(label);
+					quadlist.push_back(w);
 				}
 				continue;
 			}
@@ -848,9 +856,17 @@ int main()
 				operatorStack.push_back(tokens[x]);
 				std::cout << "operator " << tokens[x].printTokenType() << " pushed to operator stack" << endl;
 
-				if (tokens[x].tempType == Token::tokenType::IF || tokens[x].tempType == Token::tokenType::WHILE) {
+				if (tokens[x].tempType == Token::tokenType::IF) {
 					Quad q = Quad(tokens[x]);
 					quadlist.push_back(q);
+				}
+				if (tokens[x].tempType == Token::tokenType::WHILE) {
+					Label label = Label();
+					fixup.push_back(label);
+					Quad q = Quad(tokens[x]);
+					quadlist.push_back(q);
+					Quad w = Quad(label);
+					quadlist.push_back(w);
 				}
 				//while loops
 				break;//example push_back
@@ -954,7 +970,18 @@ int main()
 				PrintSymbStack(symbolStack);
 				operatorStack.push_back(tokens[x]);
 
+				if (operatorStack.back().tempType == Token::tokenType::LOOP) {
+					Label label = Label();
+					endstack.push_back(label);
+					Token op = operatorStack.back();
+					Token reverseop = reverserelational(quadlist.back().op);
+					Quad q = Quad(op, label, reverseop);
+					quadlist.push_back(q);
+					symbolStack.pop_back();
+					std::cout << "\n\n &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& \n\n" << endl;
+					std::cout << q.toString() << endl;
 
+				}
 				if (operatorStack.back().tempType == Token::tokenType::THEN) {
 					std::cout << "then case entered for equal precedence" << endl;
 					Label l = Label();
@@ -974,7 +1001,7 @@ int main()
 					endstack.push_back(l);
 					Token op = operatorStack.back();
 					Token reverseop = reverserelational(quadlist.back().op);
-					Quad q = Quad(op, l, reverseop);
+					Quad q = Quad(op, l);
 					quadlist.push_back(q);
 					quadlist.push_back(Quad(fixup.back()));
 					fixup.pop_back();
@@ -996,6 +1023,7 @@ int main()
 				tempcount = 0; // sets temp strings back to beginning
 
 				switch (operatorStack.back().tempType) {
+
 				case Token::tokenType::THEN: {
 
 					//*************************************************************************************
@@ -1032,11 +1060,14 @@ int main()
 				}
 				case Token::tokenType::LOOP: {
 					std::cout << "LOOP case entered" << endl;  //output
-					//there is a While <BE>  LOOP  <STMT>
-					symbolStack.pop_back(); //temp for <STMT>
 					operatorStack.pop_back(); // LOOP
-					symbolStack.pop_back(); //temp for <BE>
-					operatorStack.pop_back(); //While
+					operatorStack.pop_back(); // WHILE
+					Quad q = Quad(endstack.back());
+					quadlist.push_back(fixup.back());
+					fixup.pop_back();
+					quadlist.push_back(q);
+					endstack.pop_back();
+					
 					break;
 				}
 				case Token::tokenType::assignment: {

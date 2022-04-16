@@ -321,7 +321,7 @@ void PrintQuad(std::vector<Quad> quad) {
 }
 
 
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
 Token reverserelational(Quad::opType input) {
 	Token tok = Token();
 	tok.tempType = Token::tokenType::relationalop;
@@ -492,6 +492,12 @@ int main()
 			}
 			else if (tempString == "LOOP") {
 				tokens.push_back(Token(tempString, Token::tokenType::LOOP, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "input") {
+				tokens.push_back(Token(tempString, Token::tokenType::input, currentpoint)); //adds a new token to vector
+			}
+			else if (tempString == "output") {
+				tokens.push_back(Token(tempString, Token::tokenType::output, currentpoint)); //adds a new token to vector
 			}
 			else {
 				tokens.push_back(Token(tempString, Token::tokenType::variable, currentpoint)); //adds a new token to vector
@@ -766,6 +772,8 @@ int main()
 	std::vector<Quad> quadlist = std::vector<Quad>();
 	std::vector<Label> fixup = std::vector<Label>();
 	std::vector<Label> endstack = std::vector<Label>();
+	std::vector<Quad> outputlist = std::vector<Quad>();
+
 	int tempcount = 0;
 	//< gives,  > takes 
 	//0 , 1 , 2 , 3 , 4 , 5,  6 , 7 , 8 , 9  , 10   ,  11, 12,13,14, 15, 16,17,18, 19  , 20
@@ -798,6 +806,23 @@ int main()
 	//IF <run> THEN <run> ELSE 
 
 	for (int x = 0; x < tokens.size(); x++) {
+
+		//&*&*&*&*&*&*&*&*&*&*&*&*&&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
+		if (tokens[x].tempType == Token::tokenType::input) {
+			//needs to skip
+			Quad q = Quad(tokens[x], tokens[x+1]);
+			quadlist.push_back(q);
+			while (tokens[x++].tempType != Token::tokenType::semicolon);
+			x = x - 2;
+		}
+		if (tokens[x].tempType == Token::tokenType::output) {
+			//needs to skip
+			Quad q = Quad(tokens[x], tokens[x+1]);
+			outputlist.push_back(q);
+			while (tokens[x++].tempType != Token::tokenType::semicolon);
+			x = x - 2;
+		}
+
 		if (tokens[x].tempType == Token::tokenType::CLASS) {
 			while (tokens[x++].tempType != Token::tokenType::LB);
 			std::cout << "skipping CLASS" << endl;
@@ -1063,7 +1088,8 @@ int main()
 					operatorStack.pop_back(); // LOOP
 					operatorStack.pop_back(); // WHILE
 					Quad q = Quad(endstack.back());
-					quadlist.push_back(fixup.back());
+					Quad w = Quad(Quad::opType::jmp, fixup.back());
+					quadlist.push_back(w);
 					fixup.pop_back();
 					quadlist.push_back(q);
 					endstack.pop_back();
@@ -1113,11 +1139,80 @@ int main()
 	PrintOPStack(operatorStack);
 	PrintSymbStack(symbolStack);
 	PrintQuad(quadlist);
-}
+	PrintQuad(outputlist);
 
-//needs a way to output each item to a table with correct type, address, and value
+
+
+	file.open("assemblyoutput.asm");
+	file << "sys_exit equ 1\nsys_read equ 3\nsys_write equ 4\nstdin equ 4\nstdout equ 1\nstderr equ 3\n\n";
+	file << ";&&copy the section.data replace the message with correct message&&\n\n\n";
+
+	for (Symbol s : symbolTable) {
+		if (s.className == "CONST") {
+			file << s.symbolName << " DW " << s.value << endl;
+		}
+		if (s.className == "numLit") {
+			file <<"Lit"<< s.value << " DW " << s.value << endl;
+		}
+	}
+	file << "\n\n";
+	file << "TempChar RESB 1\ntestchar RESB 1\nReadInt RESW 1\ntempint RESW 1\nnegflag RESB 1\n";
+	file << "\n\n";
+
+	file << "section .bss" << endl;
+	for (Symbol s : symbolTable) {
+		if (s.className == "VAR") {
+			file << s.symbolName << " RESW 1" << endl;
+		}
+	}
+
+
+	file << "\n\n";
+	file << "section .text\n_start: nop\nAgain: \n";
+	for (Quad q : quadlist) {
+		file << q.assemble();
+	}
+
+	for (Quad o : outputlist) {
+		file << o.assemble();
+	}
+
+
+	file << "fini:\nmov eax,sys_exit\nxor ebx,ebx\nint80h\n\nPrintString:\npush ax\npush dx\n";
+	file << "mov eax, 4\nmov ebx, 1\n mov exc, userMsg\nmov edx, lenUserMsg\nint 80h\npop dx\npop ax\nret\n\n";
+	file << "GetAnInteger:\nmov eax, 3\nmov ebx, 2\nmov ecx, num\nmov edx,6\nint 0x80\n";
+	file << "mov edx, eax\nmov eax, 4\nmov ebx, 1\nmov ecx, num\nint 80h\n";
+	file << "ConvertStringToInteger:\nmov ax, 0\nmov [ReadInt], ax\nmov ecx, num\nmov bx, 0\nmov bl, byte [ecx]\nsub bl, '0'\nmov ax, [ReadInt]\n";
+	file << "mov dx, 10\nmul dx\nadd ax, bx\nmov [ReadInt], ax\nmov bx, 0\nadd ecx, 1\nmov bl, byte[ecx]\ncmp bl, 0xA\njne Next\nret\n";
+	file << "ConvertIntegerToString:\nmov ebx, ResultValue + 4\n";
+	file << "ConvertLoop:\nsub dx, dx\nmov cx, 10\ndiv cx\nadd dl, '0'\nmov [ebx], dl\ndec ebx\ncmp ebx, ResultValue\njge ConvertLoop\nret\n";
+
+
+
+		//not sure if needed???
+
+	file << "Conversion Algorithms: Burris Compiler 2 page 77\n";
+	file << "Get:\ncall PrintString\ncall GetAnInteger\nmov ax, [ReadInt]\nmov [Y], ax\n";
+	file << "Put:\nmov ax, [X]\ncall ConvertIntegerToString\nmov eax, 4\nmov ebx, 1\nmov ecx, Result\nmov edx, ResultEnd\nint 80h\n";
+	file << "Terminate:\nfini:\nmov eax, sys_exit\nxor ebx, ebx\nint 80h\n";
+
+	file.close();
+
+
+
+
+
+
+}
+//need to look at the output and figure out how to get the correct thing to output
+
+
+
+
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
 
-//debug the IF THEN ELSE for NONE precedence, and Equal precedence
+//loop through symbol table to find the things that belong in .data, and then loop again for .bss
+//.text will hold the input, the assembly from quads, the output, and the exit
+//add label  section.text before input

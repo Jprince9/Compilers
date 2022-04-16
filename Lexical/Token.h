@@ -31,7 +31,9 @@ public:
 		VAR,
 		CLASS,
 		LOOP,
-		none
+		none,
+		input,
+		output
 	};
 
 	tokenType tempType;
@@ -64,6 +66,8 @@ public:
 		case tokenType::VAR: return "VAR";
 		case tokenType::CLASS: return "CLASS";
 		case tokenType::LOOP: return "LOOP";
+		case tokenType::input: return "input";
+		case tokenType::output: return "output";
 		default: return "not a token";
 		}
 	};

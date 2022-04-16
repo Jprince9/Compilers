@@ -1,7 +1,8 @@
 CLASS Pgm1 { 
+	
 	CONST M = 13, N = 56;
 	VAR X,Z,Y, ans, a, Bob, Jane, b, c; 
-	Y = 97;
+	input X;
 	X = M * N + 18 - Y;
 	ans = a * ((Bob +Jane -10) /2 * 4) / (b + c);
 	IF 1 + 2 > 5 
@@ -16,9 +17,10 @@ CLASS Pgm1 {
 		ELSE { X = 22; }
 	     }
 X = 1;
-WHILE 5<10 LOOP { 
+WHILE X<10 LOOP { 
 X = X + 1;
 }
 Y = X * 2;
 }
 
+output X;

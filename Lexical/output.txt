@@ -29,9 +29,8 @@ b	variable
 ,	comma
 c	variable
 ;	semicolon
-Y	variable
-=	assignment
-97	integer
+input	input
+X	variable
 ;	semicolon
 X	variable
 =	assignment
@@ -134,7 +133,7 @@ X	variable
 1	integer
 ;	semicolon
 WHILE	WHILE
-5	integer
+X	variable
 <	relationalop
 10	integer
 LOOP	LOOP
@@ -153,3 +152,6 @@ X	variable
 2	integer
 ;	semicolon
 }	RB
+output	output
+X	variable
+;	semicolon

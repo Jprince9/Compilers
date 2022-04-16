@@ -29,7 +29,9 @@ public:
 		ERROR,
 		NOOP,
 		LOOP,
-		jmp
+		jmp,
+		input,
+		output
 	};
 
 	std::string printopType() {
@@ -53,6 +55,9 @@ public:
 		case Quad::opType::ELSE: return "ELSE";
 		case Quad::opType::NOOP: return "NO OP";
 		case Quad::opType::ERROR: return "ERROR";
+		case Quad::opType::jmp: return "jmp";
+		case Quad::opType::input: return "input";
+		case Quad::opType::output: return "output";
 		default: return "not an OP";
 		}
 	}
@@ -78,6 +83,8 @@ public:
 		case Quad::opType::ELSE: return "ELSE";
 		case Quad::opType::NOOP: return "NO OP";
 		case Quad::opType::ERROR: return "ERROR";
+		case Quad::opType::input: return "input";
+		case Quad::opType::output: return "output";
 		default: return "not an OP" + (int)reverseop;
 		}
 	}
@@ -98,15 +105,14 @@ public:
 		case Quad::opType::equalto:
 		case Quad::opType::notequal:
 			return "quad complete " + this->destination.tokenString + " " + this->left.tokenString + " " + this->printopType() + " " + this->right.tokenString;
-
+		case Quad::opType::jmp:
+			return "quad complete " + this->printopType() + " " + this->label.toString();
 		case Quad::opType::LOOP:
 			return "quad complete " + this->printopType() + " " + this->label.toString() + " " + this->printreverseopType();
 		case Quad::opType::WHILE:
 		case Quad::opType::FOR:
 		case Quad::opType::IF:
 			return "quad complete " + this->destination.tokenString + " " + this->left.tokenString + " " + this->printopType() + " " + this->right.tokenString;
-
-
 		case Quad::opType::THEN:
 			return "quad complete " + this->printopType() + " " + this->label.toString() + " " + this->printreverseopType();
 		case Quad::opType::ELSE:
@@ -115,6 +121,10 @@ public:
 			return "quad complete " + this->label.toString();
 		case Quad::opType::ERROR:
 			return "Quad ERROR " + this->printopType();
+		case Quad::opType::input: 
+			return "Quad complete input";
+		case Quad::opType::output: 
+			return "quad complete output";
 		}
 	}
 
@@ -183,7 +193,7 @@ public:
 
 
 		case Quad::opType::divide: {
-			output += "mov edx, 0";
+			output += "mov edx, 0\n";
 			if (this->left.tempType != Token::tokenType::integer) {
 				output += "mov eax, [" + this->left.tokenString + "]\n";
 			}
@@ -226,9 +236,13 @@ public:
 
 
 		case Quad::opType::LOOP: {
+			output += "J" + this->printreverseopType() + " " + this->label.ll + "\n";
 			break;
 		}
-
+		case Quad::opType::jmp: {
+			output += "jmp " + this->label.ll + "\n";
+			break;
+		}
 
 		case Quad::opType::assignment: {
 			if (this->right.tempType != Token::tokenType::integer) {
@@ -238,7 +252,26 @@ public:
 				output += "mov ax, " + this->right.tokenString + "\n";
 			}
 
-			output += "mov [" + this->destination.tokenString + "], ax\n";					
+			output += "mov [" + this->destination.tokenString + "], ax\n";
+			break;
+		}
+
+		case Quad::opType::input: {
+			output += "\n\ncall PrintString\n";			
+			output += "call GetAnInteger\n";
+			output += "mov ax, [ReadInt]\n";
+			output += "mov [" + this->destination.tokenString + "], ax\n\n\n";
+			break;
+		}
+
+		case Quad::opType::output: {
+			output += "\n\nmov ax, [" + this->destination.tokenString + "], ax\n";
+			output += "call ConvertIntegerToString\n";
+			output += "mov eax, 4\n";
+			output += "mov ebx, 1\n";
+			output += "mov ecx, Result\n";
+			output += "mov edx, ResultEnd\n";
+			output += "int 80h\n\n\n";
 			break;
 		}
 
@@ -263,10 +296,10 @@ public:
 				output += "mov bx, " + this->right.tokenString + "\n";
 			}
 
-			output += "cmp ax" + this->destination.tokenString + ", bx\n";
+			output += "cmp ax, bx\n";
 			break;
 		case Quad::opType::NOOP:
-
+			output += this->label.ll + ":\n";
 			break;
 		}
 		return output;
@@ -285,6 +318,7 @@ public:
 	Quad(Token, Label, Token);
 	Quad(Token);
 	Quad(Label);
+	Quad(Token, Token);
 	Quad(Token, Label);
 	Quad(opType, Label);
 	Label label;

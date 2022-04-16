@@ -5,8 +5,13 @@ Quad::Quad() {
 }
 Quad::Quad(opType op, Label l) {
 	this->label = l;
-
+	this->op = op;
 }
+Quad::Quad(Token op, Token symb) {
+	this->op = Quad::getOpType(op);
+	this->destination = symb;
+}
+
 Quad::Quad(Token op, Token left, Token right, Token destination) {
 	this->left = left;
 	this->right = right;
@@ -75,6 +80,12 @@ Quad::opType Quad::getOpType(Token op) {
 	}
 	case Token::tokenType::LOOP:{
 		return opType::LOOP;				   
+	}	
+	case Token::tokenType::input: {
+		return opType::input;
+	}
+	case Token::tokenType::output: {
+		return opType::output;
 	}
 	case Token::tokenType::relationalop: {
 		if (op.tokenString == "==") {

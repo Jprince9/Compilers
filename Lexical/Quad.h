@@ -202,10 +202,10 @@ public:
 			}
 
 			if (this->right.tempType != Token::tokenType::integer) {
-				output += "div [" + this->right.tokenString + "]\n";
+				output += "div word [" + this->right.tokenString + "]\n";
 			}
 			else {
-				output += "div " + this->right.tokenString + "\n";
+				output += "div word " + this->right.tokenString + "\n";
 			}
 
 			output += "mov [" + this->destination.tokenString + "], eax\n";

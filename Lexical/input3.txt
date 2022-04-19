@@ -1,0 +1,26 @@
+CLASS Pgm3 {
+	VAR X, Y, Z, ans;
+
+	input X;
+	input Y;
+	input Z;
+
+	IF X > Y THEN {
+		IF Z > X THEN {
+			ans = Z;
+		}
+		ELSE{
+			ans = X;
+		}
+	}
+	ELSE{
+		IF Y > Z THEN {
+			ans = Y;	
+		}
+		ELSE{
+			ans = Z;	
+		}
+	}
+
+	output ans;
+}

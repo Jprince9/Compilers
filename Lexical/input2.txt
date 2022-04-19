@@ -1,0 +1,14 @@
+CLASS Pgm2 {
+	VAR X, Y, ans;
+
+	input X;
+	input Y;
+
+	IF X > Y THEN {
+		ans = X;
+	}
+	ELSE{
+		ans = Y;
+	}
+	output ans;
+}

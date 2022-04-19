@@ -22,7 +22,7 @@ ResultEnd equ $-Result
 num times 6 db 'ABCDEF'
 numEnd equ $-num
 
-Lit1 DW 1
+section .bss
 
 
 TempChar RESB 1
@@ -32,9 +32,10 @@ tempint RESW 1
 negflag RESB 1
 
 
-section .bss
 X RESW 1
-FACT RESW 1
+Y RESW 1
+Z RESW 1
+ans RESW 1
 t1 RESW 1
 t2 RESW 1
 t3 RESW 1
@@ -63,28 +64,54 @@ mov ax, [ReadInt]
 mov [X], ax
 
 
-mov ax, 1
-mov [FACT], ax
-L2:
+
+
+call PrintString
+call GetAnInteger
+mov ax, [ReadInt]
+mov [Y], ax
+
+
+
+
+call PrintString
+call GetAnInteger
+mov ax, [ReadInt]
+mov [Z], ax
+
+
 mov ax, [X]
-mov bx, 1
+mov bx, [Y]
 cmp ax, bx
-JL L6
-mov eax, [X]
-mul word [FACT]
-mov [t2], eax
-mov ax, [t2]
-mov [FACT], ax
+JLE L5
+mov ax, [Z]
+mov bx, [X]
+cmp ax, bx
+JLE L9
+mov ax, [Z]
+mov [ans], ax
+jmp L12
+L9:
 mov ax, [X]
-sub ax, 1
-mov [t1], ax
-mov ax, [t1]
-mov [X], ax
-jmp L2
-L6:
+mov [ans], ax
+L12:
+jmp L17
+L5:
+mov ax, [Y]
+mov bx, [Z]
+cmp ax, bx
+JLE L22
+mov ax, [Y]
+mov [ans], ax
+jmp L25
+L22:
+mov ax, [Z]
+mov [ans], ax
+L25:
+L17:
 
 
-mov ax, [FACT]
+mov ax, [ans]
 call ConvertIntegerToString
 mov eax, 4
 mov ebx, 1

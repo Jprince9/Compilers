@@ -1,12 +1,14 @@
-CLASS Pgm1 { 
-VAR X;
-input X;
-VAR FACT;
-FACT=1;
+CLASS Pgm1 {
+	CONST X = 10, Y = 2, Z = 4;
+	VAR ans, a, Bob, Jane, b, c;
 
-WHILE X >= 1 LOOP{
-FACT = X * FACT;
-X=X-1;
-}
-output FACT;
+	input a;
+	input Bob;
+	input Jane;
+	input b;
+	input c;
+
+	ans = a * ( ( Bob + Jane - X ) / Y * Z ) / ( b + c );
+
+	output ans;
 }

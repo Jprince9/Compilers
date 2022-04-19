@@ -1,0 +1,12 @@
+CLASS Pgm1 { 
+VAR X;
+input X;
+VAR FACT;
+FACT=1;
+
+WHILE X >= 1 LOOP{
+FACT = X * FACT;
+X=X-1;
+}
+output FACT;
+}

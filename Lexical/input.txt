@@ -1,26 +1,12 @@
 CLASS Pgm1 { 
-	
-	CONST M = 13, N = 56;
-	VAR X,Z,Y, ans, a, Bob, Jane, b, c; 
-	input X;
-	X = M * N + 18 - Y;
-	ans = a * ((Bob +Jane -10) /2 * 4) / (b + c);
-	IF 1 + 2 > 5 
-	THEN { Y = 3 + 4; Bob = 16;
-		IF 11 + 12 < 15 
-		THEN { Y = 16; }
-		ELSE { X = 17; }
-	 }
-	ELSE {		
-		IF 18 + 19 > 20 
-		THEN { Y = 21; }
-		ELSE { X = 22; }
-	     }
-X = 1;
-WHILE X<10 LOOP { 
-X = X + 1;
-}
-Y = X * 2;
-}
+VAR X;
+input X;
+VAR FACT;
+FACT=1;
 
-output X;
+WHILE X >= 1 LOOP{
+FACT = X * FACT;
+X=X-1;
+}
+output FACT;
+}

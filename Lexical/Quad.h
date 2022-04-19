@@ -181,10 +181,10 @@ public:
 			}
 
 			if (this->right.tempType != Token::tokenType::integer) {
-				output += "mul [" + this->right.tokenString + "]\n";
+				output += "mul word [" + this->right.tokenString + "]\n";
 			}
 			else {
-				output += "mul " + this->right.tokenString + "\n";
+				output += "mul word " + this->right.tokenString + "\n";
 			}
 
 			output += "mov [" + this->destination.tokenString + "], eax\n";
@@ -265,7 +265,7 @@ public:
 		}
 
 		case Quad::opType::output: {
-			output += "\n\nmov ax, [" + this->destination.tokenString + "], ax\n";
+			output += "\n\nmov ax, [" + this->destination.tokenString + "]\n";
 			output += "call ConvertIntegerToString\n";
 			output += "mov eax, 4\n";
 			output += "mov ebx, 1\n";

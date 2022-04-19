@@ -731,8 +731,16 @@ int main()
 		}
 
 		if (tokens[x].tempType == Token::tokenType::integer) {
-			symbolTable.push_back(Symbol(tokens[x].tokenString, "numLit", stoi(tokens[x].tokenString), daddress, "DS"));
-			daddress = daddress + 2;
+			bool exists = false;
+			for (Symbol S : symbolTable) {
+				if (tokens[x].tokenString == S.symbolName) {
+					exists = true;
+				}
+			}
+			if (exists == false) {
+				symbolTable.push_back(Symbol(tokens[x].tokenString, "numLit", stoi(tokens[x].tokenString), daddress, "DS"));
+				daddress = daddress + 2;
+			}
 		}
 
 	}
@@ -859,18 +867,23 @@ int main()
 		else {
 			if (operatorStack.size() == 0) {
 				std::cout << "stack was empty, pushing first item to operator stack " << tokens[x].tokenString << endl;
-				operatorStack.push_back(tokens[x]);
-				if (tokens[x].tempType == Token::tokenType::IF) {
-					Quad q = Quad(tokens[x]);
-					quadlist.push_back(q);
+				if (tokens[x].tempType == Token::tokenType::semicolon) {
+				continue;
 				}
-				else if (tokens[x].tempType == Token::tokenType::WHILE) {
-					Label label = Label();
-					fixup.push_back(label);
-					Quad q = Quad(tokens[x]);
-					quadlist.push_back(q);
-					Quad w = Quad(label);
-					quadlist.push_back(w);
+				else {
+					operatorStack.push_back(tokens[x]);
+					if (tokens[x].tempType == Token::tokenType::IF) {
+						Quad q = Quad(tokens[x]);
+						quadlist.push_back(q);
+					}
+					else if (tokens[x].tempType == Token::tokenType::WHILE) {
+						Label label = Label();
+						fixup.push_back(label);
+						Quad q = Quad(tokens[x]);
+						quadlist.push_back(q);
+						Quad w = Quad(label);
+						quadlist.push_back(w);
+					}
 				}
 				continue;
 			}
@@ -1145,7 +1158,10 @@ int main()
 
 	file.open("assemblyoutput.asm");
 	file << "sys_exit equ 1\nsys_read equ 3\nsys_write equ 4\nstdin equ 4\nstdout equ 1\nstderr equ 3\n\n";
-	file << ";&&copy the section.data replace the message with correct message&&\n\n\n";
+	file << "section .data\n\n";
+	file << "userMsg db 'Enter an integer(less than 32,765): '\nlenUserMsg equ $-userMsg\ndisplayMsg db 'You entered: '\nlenDisplayMsg equ $-displayMsg\n";
+	file << "newline db 0xA\nTen DW 10\nprintTempchar db 'Tempchar = : '\nlenprintTempchar equ $-printTempchar\n";
+	file << "Result db 'Ans = '\nResultValue db 'aaaaa'\ndb	0xA\nResultEnd equ $-Result\nnum times 6 db 'ABCDEF'\nnumEnd equ $-num\n\n";
 
 	for (Symbol s : symbolTable) {
 		if (s.className == "CONST") {
@@ -1155,11 +1171,12 @@ int main()
 			file <<"Lit"<< s.value << " DW " << s.value << endl;
 		}
 	}
+
+
+	file << "section .bss" << endl;
 	file << "\n\n";
 	file << "TempChar RESB 1\ntestchar RESB 1\nReadInt RESW 1\ntempint RESW 1\nnegflag RESB 1\n";
 	file << "\n\n";
-
-	file << "section .bss" << endl;
 	for (Symbol s : symbolTable) {
 		if (s.className == "VAR") {
 			file << s.symbolName << " RESW 1" << endl;
@@ -1177,12 +1194,12 @@ int main()
 		file << o.assemble();
 	}
 
-
-	file << "fini:\nmov eax,sys_exit\nxor ebx,ebx\nint80h\n\nPrintString:\npush ax\npush dx\n";
-	file << "mov eax, 4\nmov ebx, 1\n mov exc, userMsg\nmov edx, lenUserMsg\nint 80h\npop dx\npop ax\nret\n\n";
+	file << "\njmp fini\n\n";
+	file << "PrintString:\npush ax\npush dx\n";
+	file << "mov eax, 4\nmov ebx, 1\nmov ecx, userMsg\nmov edx, lenUserMsg\nint 80h\npop dx\npop ax\nret\n\n";
 	file << "GetAnInteger:\nmov eax, 3\nmov ebx, 2\nmov ecx, num\nmov edx,6\nint 0x80\n";
 	file << "mov edx, eax\nmov eax, 4\nmov ebx, 1\nmov ecx, num\nint 80h\n";
-	file << "ConvertStringToInteger:\nmov ax, 0\nmov [ReadInt], ax\nmov ecx, num\nmov bx, 0\nmov bl, byte [ecx]\nsub bl, '0'\nmov ax, [ReadInt]\n";
+	file << "ConvertStringToInteger:\nmov ax, 0\nmov [ReadInt], ax\nmov ecx, num\nmov bx, 0\nmov bl, byte [ecx]\nNext: sub bl, '0'\nmov ax, [ReadInt]\n";
 	file << "mov dx, 10\nmul dx\nadd ax, bx\nmov [ReadInt], ax\nmov bx, 0\nadd ecx, 1\nmov bl, byte[ecx]\ncmp bl, 0xA\njne Next\nret\n";
 	file << "ConvertIntegerToString:\nmov ebx, ResultValue + 4\n";
 	file << "ConvertLoop:\nsub dx, dx\nmov cx, 10\ndiv cx\nadd dl, '0'\nmov [ebx], dl\ndec ebx\ncmp ebx, ResultValue\njge ConvertLoop\nret\n";
@@ -1191,9 +1208,8 @@ int main()
 
 		//not sure if needed???
 
-	file << "Conversion Algorithms: Burris Compiler 2 page 77\n";
-	file << "Get:\ncall PrintString\ncall GetAnInteger\nmov ax, [ReadInt]\nmov [Y], ax\n";
-	file << "Put:\nmov ax, [X]\ncall ConvertIntegerToString\nmov eax, 4\nmov ebx, 1\nmov ecx, Result\nmov edx, ResultEnd\nint 80h\n";
+	file << "\n";
+
 	file << "Terminate:\nfini:\nmov eax, sys_exit\nxor ebx, ebx\nint 80h\n";
 
 	file.close();
@@ -1215,4 +1231,3 @@ int main()
 
 //loop through symbol table to find the things that belong in .data, and then loop again for .bss
 //.text will hold the input, the assembly from quads, the output, and the exit
-//add label  section.text before input
